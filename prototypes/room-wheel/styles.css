@@ -1,0 +1,737 @@
+/* ==========================================================================
+   PFT Sun Run — Classroom Assignment Wheel Prototype
+   Styles: Warm Cream / Charcoal Palette with Sun Amber/Gold Accents
+   Autonomous Browser-Only Implementation (Issue #22)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Design Tokens & CSS Custom Properties
+   -------------------------------------------------------------------------- */
+:root {
+  /* Warm cream backgrounds */
+  --bg-page: #f6f3eb;
+  --bg-card: #ffffff;
+  --bg-card-subtle: #faf8f3;
+  --bg-card-muted: #f2eee3;
+
+  /* Charcoal & neutral text */
+  --text-primary: #18181b;
+  --text-secondary: #3f3f46;
+  --text-muted: #71717a;
+  --border-light: #e4dfd3;
+  --border-mid: #d1c9b8;
+  --border-dark: #27272a;
+
+  /* Sun Orange & Gold Accents */
+  --sun-gold-light: #fef3c7;
+  --sun-gold: #f59e0b;
+  --sun-orange: #d97706;
+  --sun-deep: #b45309;
+  --sun-ember: #c2410c;
+  --sun-glow: rgba(217, 119, 6, 0.25);
+
+  /* Semantic Feedback Colors */
+  --warn-bg: #fffbeb;
+  --warn-border: #fcd34d;
+  --warn-text: #92400e;
+
+  --status-idle-bg: #f4f4f5;
+  --status-idle-border: #e4e4e7;
+  --status-idle-text: #3f3f46;
+
+  --status-spin-bg: #fef3c7;
+  --status-spin-border: #fde68a;
+  --status-spin-text: #92400e;
+
+  --status-settled-bg: #ecfdf5;
+  --status-settled-border: #a7f3d0;
+  --status-settled-text: #065f46;
+
+  /* Typography */
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* Layout */
+  --max-width: 1040px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(24, 24, 27, 0.08);
+  --shadow-md: 0 4px 12px rgba(24, 24, 27, 0.09);
+  --shadow-lg: 0 10px 25px rgba(24, 24, 27, 0.12);
+}
+
+/* --------------------------------------------------------------------------
+   Global Reset & Box Sizing
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-sans);
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* Screen reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Accessible focus visible ring for all keyboard interactive controls */
+:focus-visible {
+  outline: 3px solid var(--sun-orange);
+  outline-offset: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   Layout Containers
+   -------------------------------------------------------------------------- */
+.page-wrapper {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+@media (min-width: 640px) {
+  .page-wrapper {
+    padding: 2.5rem 1.75rem 4rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Header & Announcement Callouts
+   -------------------------------------------------------------------------- */
+.header {
+  margin-bottom: 2rem;
+}
+
+.header-content {
+  margin-bottom: 1.25rem;
+}
+
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  border-radius: 9999px;
+}
+
+.prototype-badge {
+  background-color: var(--sun-gold-light);
+  color: var(--sun-deep);
+  border: 1px solid var(--sun-gold);
+}
+
+.build-badge {
+  background-color: var(--bg-card-muted);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-mid);
+}
+
+.page-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+@media (min-width: 640px) {
+  .page-title {
+    font-size: 2.25rem;
+  }
+}
+
+.page-subtitle {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  max-width: 48rem;
+}
+
+/* Warning & Noscript Callouts */
+.callout {
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.warning-callout {
+  background-color: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  color: var(--warn-text);
+  box-shadow: var(--shadow-sm);
+}
+
+.callout-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+  font-size: 0.95rem;
+}
+
+.callout-symbol {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.callout-text {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.noscript-callout {
+  background-color: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #991b1b;
+}
+
+/* --------------------------------------------------------------------------
+   Main Grid Layout
+   -------------------------------------------------------------------------- */
+.app-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (min-width: 860px) {
+  .app-layout {
+    grid-template-columns: minmax(320px, 460px) 1fr;
+    gap: 2.5rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Wheel Column & SVG Stage
+   -------------------------------------------------------------------------- */
+.wheel-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.wheel-stage {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#wheel-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 440px;
+  max-height: 440px;
+  overflow: visible;
+  touch-action: manipulation;
+}
+
+/* SVG Wheel Decorative Components */
+.svg-wheel-backdrop {
+  fill: #18181b;
+}
+
+.svg-wheel-rim {
+  fill: none;
+  stroke: #18181b;
+  stroke-width: 6;
+}
+
+.svg-wheel-outer-bezel {
+  fill: none;
+  stroke: var(--sun-orange);
+  stroke-width: 3;
+}
+
+/* Stationary Hub */
+.svg-wheel-hub {
+  pointer-events: none;
+}
+
+.svg-hub-outer {
+  fill: #18181b;
+  stroke: var(--sun-orange);
+  stroke-width: 4;
+}
+
+.svg-hub-core {
+  fill: var(--sun-gold);
+}
+
+.svg-hub-pin {
+  fill: var(--bg-card);
+}
+
+/* Stationary Pointer */
+.svg-wheel-pointer {
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.45));
+}
+
+.svg-pointer-body {
+  fill: var(--sun-gold);
+  stroke: #18181b;
+  stroke-width: 3.5;
+  stroke-linejoin: round;
+}
+
+.svg-pointer-cap {
+  fill: var(--sun-ember);
+  stroke: #18181b;
+  stroke-width: 2;
+}
+
+/* Pointer Meaning Caption */
+.pointer-explanation {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  max-width: 440px;
+  width: 100%;
+  box-shadow: var(--shadow-sm);
+}
+
+.pointer-icon {
+  color: var(--sun-ember);
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.pointer-caption {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+
+/* Text & Sector Styling inside rotor (rendered by wheel.js) */
+#wheel-rotor text {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
+}
+
+#wheel-rotor path {
+  cursor: default;
+}
+
+/* --------------------------------------------------------------------------
+   Dashboard Column & Panel Cards
+   -------------------------------------------------------------------------- */
+.dashboard-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.panel-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.panel-title {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--bg-card-muted);
+  padding-bottom: 0.5rem;
+}
+
+.panel-subtitle {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   Controls & Buttons
+   -------------------------------------------------------------------------- */
+.controls-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.75rem 1.5rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.05s ease, box-shadow 0.15s ease;
+  user-select: none;
+  text-align: center;
+  text-decoration: none;
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* Primary Spin Button */
+.btn-primary {
+  background-color: var(--sun-ember);
+  color: #ffffff;
+  border-color: var(--sun-deep);
+  box-shadow: 0 2px 6px var(--sun-glow);
+  flex: 1 1 180px;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #9a3412;
+  border-color: #7c2d12;
+}
+
+.btn-primary:disabled {
+  background-color: #9ca3af;
+  border-color: #6b7280;
+  color: #374151;
+  cursor: not-allowed;
+  opacity: 0.7;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Secondary Skip / Reveal Button */
+.btn-secondary {
+  background-color: var(--border-dark);
+  color: var(--sun-gold-light);
+  border-color: var(--sun-orange);
+  flex: 1 1 180px;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: #3f3f46;
+  border-color: var(--sun-gold);
+  color: #ffffff;
+}
+
+.btn-secondary:disabled {
+  background-color: #9ca3af;
+  border-color: #6b7280;
+  color: #374151;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Ensure hidden attribute is respected */
+[hidden] {
+  display: none !important;
+}
+
+/* Checkbox Styling */
+.checkbox-wrapper {
+  margin-bottom: 1.25rem;
+  padding: 0.5rem 0;
+}
+
+.checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+  min-height: 44px;
+}
+
+.checkbox-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.checkbox-box {
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--border-mid);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.checkbox-input:checked + .checkbox-box {
+  background-color: var(--sun-orange);
+  border-color: var(--sun-deep);
+}
+
+.checkbox-input:checked + .checkbox-box::after {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 11px;
+  border: solid #ffffff;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg);
+  margin-top: -2px;
+}
+
+.checkbox-input:focus-visible + .checkbox-box {
+  outline: 3px solid var(--sun-orange);
+  outline-offset: 3px;
+}
+
+.checkbox-text {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* Keyboard Guide */
+.keyboard-guide {
+  background-color: var(--bg-card-subtle);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+}
+
+.guide-title {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.guide-text {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+kbd {
+  display: inline-block;
+  padding: 0.15rem 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background-color: #ffffff;
+  border: 1px solid var(--border-mid);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+/* --------------------------------------------------------------------------
+   Result & Status Display
+   -------------------------------------------------------------------------- */
+/* Dedicated aria-live polite region */
+.status-region {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  background-color: var(--status-idle-bg);
+  border: 1px solid var(--status-idle-border);
+  color: var(--status-idle-text);
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+}
+
+/* State-specific status styling */
+#app[data-state="spinning"] .status-region {
+  background-color: var(--status-spin-bg);
+  border-color: var(--status-spin-border);
+  color: var(--status-spin-text);
+}
+
+#app[data-state="settled"] .status-region {
+  background-color: var(--status-settled-bg);
+  border-color: var(--status-settled-border);
+  color: var(--status-settled-text);
+}
+
+.result-display-box {
+  background-color: var(--bg-card-subtle);
+  border: 2px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+#app[data-state="settled"] .result-display-box {
+  border-color: var(--sun-orange);
+  background-color: #fffdf5;
+  box-shadow: 0 0 0 1px var(--sun-orange), var(--shadow-sm);
+}
+
+.result-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.result-value {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+#app[data-state="settled"] .result-value {
+  color: var(--sun-ember);
+}
+
+.result-details {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+/* --------------------------------------------------------------------------
+   Demo Room Pool Listing
+   -------------------------------------------------------------------------- */
+.pool-explainer {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0 0 0.85rem;
+}
+
+.room-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 0.5rem;
+}
+
+.room-list li {
+  background-color: var(--bg-card-subtle);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.25rem;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Highlight item matching selected room when settled */
+#app[data-state="settled"] .room-list li.is-selected {
+  background-color: var(--sun-gold-light);
+  border-color: var(--sun-orange);
+  color: var(--sun-deep);
+  box-shadow: 0 0 0 1px var(--sun-orange);
+}
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+.footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.footer-content {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.footer-meta {
+  margin: 0 0 0.5rem;
+}
+
+.footer-note {
+  margin: 0;
+}
+
+.footer code {
+  font-family: var(--font-mono);
+  background-color: var(--bg-card-muted);
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+  color: var(--text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   Reduced Motion Preferences
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .btn:active:not(:disabled) {
+    transform: none;
+  }
+}

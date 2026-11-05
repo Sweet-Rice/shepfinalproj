@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PFT Sun Run — Classroom Assignment Wheel Prototype</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./wheel.js"></script>
+</head>
+<body>
+  <div class="page-wrapper">
+    <header class="header">
+      <div class="header-content">
+        <div class="badge-row">
+          <span class="badge prototype-badge">Interactive Browser Prototype</span>
+          <span class="badge build-badge">Issue #22 Demo</span>
+        </div>
+        <h1 class="page-title">PFT Sun Run: Classroom Assignment Wheel</h1>
+        <p class="page-subtitle">
+          Randomized classroom objective selector prototype for the Patrick F. Taylor Hall indoor survival encounter.
+        </p>
+      </div>
+
+      <aside class="callout warning-callout" role="note" aria-label="Prototype Room Notice">
+        <div class="callout-heading">
+          <span class="callout-symbol" aria-hidden="true">&#9888;</span>
+          <strong>Prototype Disclaimer — Unverified Placeholder Classrooms</strong>
+        </div>
+        <p class="callout-text">
+          Classroom numbers (<strong>demo-101</strong> through <strong>demo-106</strong>) are fictitious sample placeholders used strictly for testing selection geometry, animation timing, and event handoff. They do not represent verified, measured, or eligible classrooms in the actual PFT digital twin.
+        </p>
+      </aside>
+
+      <noscript>
+        <div class="callout noscript-callout" role="alert">
+          <div class="callout-heading">
+            <span class="callout-symbol" aria-hidden="true">&#9888;</span>
+            <strong>JavaScript Required</strong>
+          </div>
+          <p class="callout-text">
+            This prototype requires JavaScript to populate wheel sectors, calculate spin physics, and dispatch classroom assignment events. Please enable JavaScript to interact with the wheel.
+          </p>
+        </div>
+      </noscript>
+    </header>
+
+    <main id="app" data-state="idle" class="app-layout">
+      <!-- Wheel Column -->
+      <section class="wheel-section" aria-labelledby="wheel-heading">
+        <h2 id="wheel-heading" class="sr-only">Classroom Selector Wheel</h2>
+
+        <div class="wheel-stage">
+          <svg id="wheel-svg" viewBox="0 0 600 600" width="600" height="600" aria-hidden="true" focusable="false">
+            <title id="wheel-title">PFT Sun Run Classroom Assignment Wheel</title>
+            <desc id="wheel-description">A circular selector wheel divided into six equal sectors representing sample demo classrooms. A stationary pointer at the top twelve o'clock position (tip pointing downward at 300, 75) indicates the selected room when the wheel stops spinning.</desc>
+
+            <defs>
+              <!-- Ambient wheel glow -->
+              <filter id="shadow-filter" x="-10%" y="-10%" width="120%" height="120%">
+                <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#18181b" flood-opacity="0.35" />
+              </filter>
+            </defs>
+
+            <!-- Decorative outer drop/halo -->
+            <circle cx="300" cy="300" r="248" class="svg-wheel-backdrop" filter="url(#shadow-filter)" />
+
+            <!-- Rotor group: geometry, sector colors, and room labels are dynamically populated and rotated strictly by wheel.js -->
+            <g id="wheel-rotor"></g>
+
+            <!-- Stationary wheel bezel/rim (outside rotor group) -->
+            <circle cx="300" cy="300" r="240" class="svg-wheel-rim" />
+            <circle cx="300" cy="300" r="244" class="svg-wheel-outer-bezel" />
+
+            <!-- Stationary center hub (outside rotor group, centered at 300, 300) -->
+            <g id="wheel-hub" class="svg-wheel-hub">
+              <circle cx="300" cy="300" r="38" class="svg-hub-outer" />
+              <circle cx="300" cy="300" r="26" class="svg-hub-core" />
+              <circle cx="300" cy="300" r="10" class="svg-hub-pin" />
+            </g>
+
+            <!-- Stationary pointer at 12 o'clock (outside rotor group, tip pointing down around 300, 75) -->
+            <g id="wheel-pointer" class="svg-wheel-pointer">
+              <!-- Pointer needle tip at (300, 75) -->
+              <path d="M 284 32 L 316 32 L 316 46 L 300 75 L 284 46 Z" class="svg-pointer-body" />
+              <circle cx="300" cy="39" r="5" class="svg-pointer-cap" />
+            </g>
+          </svg>
+        </div>
+
+        <div class="pointer-explanation">
+          <span class="pointer-icon" aria-hidden="true">&#9660;</span>
+          <p class="pointer-caption">
+            <strong>12 o'clock Target Pointer:</strong> The stationary orange needle at the top marks the winning classroom sector when the wheel finishes spinning.
+          </p>
+        </div>
+      </section>
+
+      <!-- Dashboard Column: Controls, Results, Room Pool -->
+      <section class="dashboard-section" aria-labelledby="controls-heading">
+        <!-- Controls Card -->
+        <div class="panel-card controls-card">
+          <h2 id="controls-heading" class="panel-title">Spin Controls</h2>
+
+          <div class="controls-actions">
+            <button id="spin-button" type="button" class="btn btn-primary">
+              <span class="btn-text">Spin for room</span>
+            </button>
+            <button id="skip-button" type="button" class="btn btn-secondary" hidden>
+              Reveal selection now
+            </button>
+          </div>
+
+          <div class="checkbox-wrapper">
+            <label class="checkbox-label" for="skip-animation">
+              <input type="checkbox" id="skip-animation" class="checkbox-input">
+              <span class="checkbox-box" aria-hidden="true"></span>
+              <span class="checkbox-text">Skip spin animation</span>
+            </label>
+          </div>
+
+          <div class="keyboard-guide">
+            <span class="guide-title">Keyboard Navigation:</span>
+            <p class="guide-text">
+              Press <kbd>Tab</kbd> to move focus between controls. Activate buttons with <kbd>Space</kbd> or <kbd>Enter</kbd>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Result Card -->
+        <div class="panel-card result-card">
+          <h2 class="panel-title">Objective Assignment</h2>
+
+          <!-- Dedicated live status element for screen readers (single polite region) -->
+          <div id="status" role="status" aria-live="polite" class="status-region">
+            Ready to spin.
+          </div>
+
+          <div class="result-display-box">
+            <div class="result-label">Assigned Room:</div>
+            <div id="assigned-room" class="result-value">Not assigned</div>
+          </div>
+
+          <div id="result-details" class="result-details">
+            Spin the wheel to assign a target classroom for this round.
+          </div>
+        </div>
+
+        <!-- Demo Room Pool Card -->
+        <div class="panel-card pool-card">
+          <h3 class="panel-subtitle">Demo Classroom Pool (6 Sectors)</h3>
+          <p class="pool-explainer">
+            The wheel is divided into six equal 60&deg; sectors. Labels are populated from the client data array:
+          </p>
+          <ul id="room-list" class="room-list"></ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-content">
+        <p class="footer-meta">
+          <strong>PFT Sun Run — Issue #22 Classroom Wheel Prototype</strong> &bull;
+          Standalone browser demonstration. No server, node build, or external fonts required.
+        </p>
+        <p class="footer-note">
+          Settling dispatches a <code>room-selected</code> bubbling CustomEvent on <code>#app</code> for downstream Unreal Engine round initialization.
+        </p>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
