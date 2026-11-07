@@ -1,0 +1,6 @@
+session_id,participant_id,build_revision,attempt_number,start_reason,room_id,outcome,route_seconds,wrong_door_checks,assisted,understood_zero,understood_shade,blocker_codes,notes
+S01,P01,,1,initial,,not_run,,,,,,,
+S01,P02,,1,initial,,not_run,,,,,,,
+S01,P03,,1,initial,,not_run,,,,,,,
+S01,P04,,1,initial,,not_run,,,,,,,
+S01,P05,,1,initial,,not_run,,,,,,,
