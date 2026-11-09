@@ -1,0 +1,169 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 500" width="980" height="500" style="font-family: system-ui, -apple-system, sans-serif;">
+  <title>Cover &amp; Exposure Test Fixtures (Schematic Only)</title>
+  <desc>Conceptual top-down schematic test fixtures for QA cover and exposure testing. Figure 1: straight corridor with obstacle W and candidate cover H. Figure 2: L-corner with bend B and downstream sample P. Unmeasured test fixtures only, not PFT building geometry, not to scale.</desc>
+
+  <defs>
+    <!-- Arrowhead markers -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="var(--fg, currentColor)" />
+    </marker>
+    <marker id="arrow-accent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="var(--accent, currentColor)" />
+    </marker>
+    <marker id="arrow-muted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="var(--muted, currentColor)" />
+    </marker>
+    <marker id="arrow-start" viewBox="0 0 10 10" refX="2" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 8 1.5 L 0 5 L 8 8.5 z" fill="var(--fg, currentColor)" />
+    </marker>
+    <marker id="arrow-end" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="var(--fg, currentColor)" />
+    </marker>
+
+    <!-- Wall hatch patterns -->
+    <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="8" stroke="var(--border, currentColor)" stroke-width="1.5" />
+    </pattern>
+    <pattern id="hatch-dense" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="6" stroke="var(--fg, currentColor)" stroke-width="1.5" />
+    </pattern>
+  </defs>
+
+  <!-- Visible Warning Header -->
+  <text x="490" y="24" text-anchor="middle" font-size="18" font-weight="bold" fill="var(--fg, currentColor)">Cover &amp; Exposure Test Fixtures (Schematic Only)</text>
+  <text x="490" y="44" text-anchor="middle" font-size="14" fill="var(--muted, currentColor)">NOTE: Conceptual test fixtures only — NOT PFT geometry, NOT to scale, no coordinates or physics asserted</text>
+
+  <!-- ========================================================================= -->
+  <!-- PANEL 1: FIGURE 1 - STRAIGHT CORRIDOR FIXTURE                             -->
+  <!-- ========================================================================= -->
+  <rect x="15" y="58" width="465" height="428" rx="8" fill="none" stroke="var(--border, currentColor)" stroke-width="1.5" />
+
+  <text x="35" y="82" font-size="16" font-weight="bold" fill="var(--fg, currentColor)">Figure 1: Straight Corridor Fixture</text>
+  <text x="35" y="100" font-size="14" fill="var(--muted, currentColor)">Linear corridor with obstacle W and candidate cover H</text>
+
+  <!-- Corridor Boundaries & Walls -->
+  <!-- Top wall strip (hatched) -->
+  <rect x="35" y="140" width="425" height="15" fill="url(#hatch)" stroke="var(--border, currentColor)" stroke-width="1" />
+  <!-- Bottom wall strip (hatched) -->
+  <rect x="35" y="265" width="425" height="15" fill="url(#hatch)" stroke="var(--border, currentColor)" stroke-width="1" />
+
+  <!-- Upstream / Downstream open boundaries -->
+  <line x1="35" y1="155" x2="35" y2="265" stroke="var(--border, currentColor)" stroke-width="1.5" stroke-dasharray="4,3" />
+  <line x1="460" y1="155" x2="460" y2="265" stroke="var(--border, currentColor)" stroke-width="1.5" stroke-dasharray="4,3" />
+
+  <!-- Node S: Hazard origin (upstream) -->
+  <circle cx="65" cy="210" r="15" fill="none" stroke="var(--fg, currentColor)" stroke-width="2" />
+  <text x="65" y="215" font-size="14" font-weight="bold" text-anchor="middle" fill="var(--fg, currentColor)">S</text>
+  <text x="65" y="242" font-size="14" font-weight="bold" text-anchor="middle" fill="var(--fg, currentColor)">S (Origin)</text>
+
+  <!-- Node F: Hazard front advancing downstream -->
+  <line x1="155" y1="155" x2="155" y2="265" stroke="var(--accent, currentColor)" stroke-width="2.5" stroke-dasharray="6,4" />
+  <line x1="155" y1="185" x2="175" y2="185" stroke="var(--accent, currentColor)" stroke-width="2" marker-end="url(#arrow-accent)" />
+  <line x1="155" y1="235" x2="175" y2="235" stroke="var(--accent, currentColor)" stroke-width="2" marker-end="url(#arrow-accent)" />
+  <text x="155" y="132" font-size="14" font-weight="bold" text-anchor="middle" fill="var(--accent, currentColor)">F (Front →)</text>
+
+  <!-- Obstacle W: Barrier slot protruding from upper wall -->
+  <rect x="235" y="155" width="25" height="60" fill="url(#hatch-dense)" stroke="var(--fg, currentColor)" stroke-width="2" />
+  <text x="247.5" y="190" font-size="14" font-weight="bold" text-anchor="middle" fill="var(--fg, currentColor)">W</text>
+  <text x="247.5" y="132" font-size="14" font-weight="bold" text-anchor="middle" fill="var(--fg, currentColor)">Barrier Slot W</text>
+
+  <!-- Sightline S -> H (occluded by W) -->
+  <line x1="80" y1="208" x2="235" y2="189" stroke="var(--muted, currentColor)" stroke-width="1.5" stroke-dasharray="3,3" />
+  <!-- Occlusion X on obstacle W -->
+  <line x1="242" y1="183" x2="252" y2="193" stroke="var(--accent, currentColor)" stroke-width="2" />
+  <line x1="252" y1="183" x2="242" y2="193" stroke="var(--accent, currentColor)" stroke-width="2" />
+  <line x1="260" y1="186" x2="295" y2="182" stroke="var(--muted, currentColor)" stroke-width="1" stroke-dasharray="2,3" />
+
+  <!-- Node H: Candidate cover point behind W -->
+  <circle cx="310" cy="180" r="15" fill="none" stroke="var(--fg, currentColor)" stroke-width="2" />
+  <text x="310" y="185" font-size="14" font-weight="bold" text-anchor="middle" fill="var(--fg, currentColor)">H</text>
+  <text x="332" y="176" font-size="14" font-weight="bold" fill="var(--fg, currentColor)">H (Candidate cover)</text>
+  <text x="332" y="193" font-size="14" fill="var(--muted, currentColor)">Host verify required</text>
+
+  <!-- Unobstructed Sightline S -> A (below obstacle W) -->
+  <line x1="80" y1="211" x2="380" y2="234" stroke="var(--border, currentColor)" stroke-width="1" stroke-dasharray="4,4" />
+
+  <!-- Node A: Exposed player sample point in open corridor -->
+  <circle cx="395" cy="235" r="15" fill="none" stroke="var(--fg, currentColor)" stroke-width="2" />
+  <text x="395" y="240" font-size="14" font-weight="bold" text-anchor="middle" fill="var(--fg, currentColor)">A</text>
+  <text x="395" y="260" font-size="14" font-weight="bold" text-anchor="middle" fill="var(--fg, currentColor)">A (Exposed)</text>
+
+  <!-- Bidirectional Player Transit Path A <-> H -->
+  <path d="M 382 226 C 360 215, 345 200, 325 186" fill="none" stroke="var(--fg, currentColor)" stroke-width="1.5" stroke-dasharray="4,3" marker-start="url(#arrow-start)" marker-end="url(#arrow-end)" />
+  <text x="362" y="214" font-size="14" font-style="italic" fill="var(--fg, currentColor)">A ↔ H</text>
+
+  <!-- Panel 1 Key Rules & Properties -->
+  <text x="35" y="306" font-size="14" font-weight="bold" fill="var(--fg, currentColor)">Fixture Elements &amp; Verification Rules:</text>
+  <text x="35" y="327" font-size="14" fill="var(--fg, currentColor)">• S: Upstream origin | F: Front advancing right</text>
+  <text x="35" y="348" font-size="14" fill="var(--fg, currentColor)">• A: Exposed player sample point in open corridor</text>
+  <text x="35" y="369" font-size="14" fill="var(--fg, currentColor)">• W: Barrier slot (opaque wall baseline occludes S→H ray)</text>
+  <text x="48" y="388" font-size="14" fill="var(--muted, currentColor)">  Door / glass variants replace W; protection undecided</text>
+  <text x="35" y="409" font-size="14" fill="var(--fg, currentColor)">• H: Candidate cover point behind W (A ↔ H transit path)</text>
+  <text x="48" y="428" font-size="14" fill="var(--muted, currentColor)">  H must be host-verified; cover not assumed from drawing</text>
+  <text x="35" y="449" font-size="14" fill="var(--fg, currentColor)">• Pre-front: No damage at A or H before F arrives</text>
+  <text x="35" y="470" font-size="14" fill="var(--fg, currentColor)">• If H is verified shade: damage stops; F keeps moving</text>
+
+  <!-- ========================================================================= -->
+  <!-- PANEL 2: FIGURE 2 - L-CORNER FIXTURE                                      -->
+  <!-- ========================================================================= -->
+  <rect x="500" y="58" width="465" height="428" rx="8" fill="none" stroke="var(--border, currentColor)" stroke-width="1.5" />
+
+  <text x="520" y="82" font-size="16" font-weight="bold" fill="var(--fg, currentColor)">Figure 2: L-Corner Fixture</text>
+  <text x="520" y="100" font-size="14" fill="var(--muted, currentColor)">Corner propagation &amp; inner-corner occlusion</text>
+
+  <!-- L-Corridor Outer Wall strip (hatched) -->
+  <path d="M 520 135 L 855 135 L 855 370 L 840 370 L 840 150 L 520 150 Z" fill="url(#hatch)" stroke="var(--border, currentColor)" stroke-width="1" />
+
+  <!-- Inner Corner Solid Wall (Occluder block, hatched) -->
+  <rect x="600" y="220" width="170" height="110" fill="url(#hatch)" stroke="var(--border, currentColor)" stroke-width="1.5" />
+  <line x1="520" y1="220" x2="600" y2="220" stroke="var(--border, currentColor)" stroke-width="1.5" />
+  <line x1="770" y1="330" x2="770" y2="370" stroke="var(--border, currentColor)" stroke-width="1.5" />
+
+  <!-- Label inside solid inner corner wall -->
+  <text x="685" y="260" font-size="14" font-weight="bold" text-anchor="middle" fill="var(--fg, currentColor)">Inner Corner Wall</text>
+  <text x="685" y="278" font-size="14" text-anchor="middle" fill="var(--muted, currentColor)">(Solid Occluder)</text>
+
+  <!-- Open boundaries -->
+  <line x1="520" y1="150" x2="520" y2="220" stroke="var(--border, currentColor)" stroke-width="1.5" stroke-dasharray="4,3" />
+  <line x1="770" y1="370" x2="840" y2="370" stroke="var(--border, currentColor)" stroke-width="1.5" stroke-dasharray="4,3" />
+
+  <!-- Node S: Hazard origin in horizontal arm -->
+  <circle cx="550" cy="185" r="15" fill="none" stroke="var(--fg, currentColor)" stroke-width="2" />
+  <text x="550" y="190" font-size="14" font-weight="bold" text-anchor="middle" fill="var(--fg, currentColor)">S</text>
+  <text x="550" y="214" font-size="14" font-weight="bold" text-anchor="middle" fill="var(--fg, currentColor)">S (Origin)</text>
+
+  <!-- Node F: Hazard front before bend -->
+  <line x1="650" y1="150" x2="650" y2="220" stroke="var(--accent, currentColor)" stroke-width="2.5" stroke-dasharray="6,4" />
+  <line x1="650" y1="170" x2="670" y2="170" stroke="var(--accent, currentColor)" stroke-width="2" marker-end="url(#arrow-accent)" />
+  <line x1="650" y1="200" x2="670" y2="200" stroke="var(--accent, currentColor)" stroke-width="2" marker-end="url(#arrow-accent)" />
+  <text x="650" y="132" font-size="14" font-weight="bold" text-anchor="middle" fill="var(--accent, currentColor)">F (Front before bend)</text>
+
+  <!-- Node B: Corner bend junction -->
+  <circle cx="805" cy="185" r="15" fill="none" stroke="var(--fg, currentColor)" stroke-width="2" />
+  <text x="805" y="190" font-size="14" font-weight="bold" text-anchor="middle" fill="var(--fg, currentColor)">B</text>
+  <text x="805" y="132" font-size="14" font-weight="bold" text-anchor="middle" fill="var(--fg, currentColor)">B (Bend)</text>
+
+  <!-- Forward propagation path turning at B toward P -->
+  <path d="M 655 185 L 795 185 Q 805 185 805 195 L 805 295" fill="none" stroke="var(--accent, currentColor)" stroke-width="2.5" stroke-dasharray="5,3" marker-end="url(#arrow-accent)" />
+  <text x="865" y="245" font-size="14" fill="var(--accent, currentColor)">Front path</text>
+  <text x="865" y="263" font-size="14" fill="var(--accent, currentColor)">turns at B</text>
+  <text x="865" y="281" font-size="14" fill="var(--accent, currentColor)">toward P</text>
+
+  <!-- Node P: Player sample in downstream vertical arm -->
+  <circle cx="805" cy="335" r="15" fill="none" stroke="var(--fg, currentColor)" stroke-width="2" />
+  <text x="805" y="340" font-size="14" font-weight="bold" text-anchor="middle" fill="var(--fg, currentColor)">P</text>
+  <text x="830" y="335" font-size="14" font-weight="bold" fill="var(--fg, currentColor)">P (Sample)</text>
+  <text x="830" y="352" font-size="14" fill="var(--muted, currentColor)">Downstream</text>
+
+  <!-- Straight-line sightline S -> P (occluded by inner corner) -->
+  <line x1="565" y1="194" x2="610" y2="220" stroke="var(--muted, currentColor)" stroke-width="1.5" stroke-dasharray="3,3" />
+  <line x1="610" y1="220" x2="770" y2="314" stroke="var(--accent, currentColor)" stroke-width="1.5" stroke-dasharray="2,3" />
+  <line x1="770" y1="314" x2="792" y2="327" stroke="var(--muted, currentColor)" stroke-width="1" stroke-dasharray="2,3" />
+
+  <!-- Panel 2 Key Rules & Properties -->
+  <text x="520" y="390" font-size="14" font-weight="bold" fill="var(--fg, currentColor)">Corner Model &amp; Cover Must Be Confirmed:</text>
+  <text x="520" y="410" font-size="14" fill="var(--fg, currentColor)">• S: Origin | B: Bend | P: Downstream sample</text>
+  <text x="520" y="430" font-size="14" fill="var(--fg, currentColor)">• Inner wall blocks the direct S-to-P sightline</text>
+  <text x="520" y="450" font-size="14" fill="var(--fg, currentColor)">• F turns at B under the agreed propagation model</text>
+  <text x="520" y="470" font-size="14" fill="var(--muted, currentColor)">• Classify P using agreed front and shade rules</text>
+</svg>

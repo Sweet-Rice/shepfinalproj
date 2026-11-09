@@ -12,7 +12,7 @@ The building is an existing Unreal project, not a model we need to recreate. Our
 
 ### Status and how to read this document
 
-- **Implemented in this repository:** this README only. No playable sun encounter, Unreal source, or building assets have been committed here.
+- **Implemented in this repository:** design documentation, including a [cover and exposure QA matrix](docs/qa/cover-cases.md) with schematic test fixtures. All game execution results remain pending. No playable sun encounter, Unreal source, or building assets have been committed here.
 - **Verified from the supplied archive:** the project structure and configuration in [Existing digital twin](#existing-digital-twin).
 - **Agreed design baseline:** the concept and gameplay rules below. These describe intended behavior, not working code.
 - **Proposed implementation:** the Unreal architecture, interfaces, and development sequence. Agents should inspect the actual project before applying them.
