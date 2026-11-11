@@ -121,6 +121,8 @@ Verification requires evidence from in-editor or packaged gameplay tests (tracke
 
 Use the [round lifecycle cases](docs/qa/round-cases.md) for reproducible steps and a results log.
 
+Use the [cover and exposure matrix](docs/qa/cover-cases.md) to check sun arrival, shade, and damage against the visual boundary. Its diagrams are test fixtures, and execution results are pending.
+
 | Scenario | Expected result | Status |
 | --- | --- | --- |
 | Wheel handoff | At the Commons spawn, the wheel settles on one eligible room; the objective, movement, and configured countdown start together exactly once. | Unverified |
