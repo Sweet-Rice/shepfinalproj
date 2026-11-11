@@ -83,6 +83,8 @@ The building's geometry, classroom labels, collision, lighting, performance, and
 7. Open the configured `PatrickFTaylorHall` map, let required compilation finish, and test the existing experience in Play In Editor.
 8. Record the working engine version, build steps, and any confirmed setup fixes in this README.
 
+Playtesters using a shared package can follow the [player quickstart](docs/player-quickstart.md) and use the [bug report template](.github/ISSUE_TEMPLATE/bug-report.md).
+
 **First editor check:** locate a usable starting area and classroom, verify walking-scale dimensions, floors, walls, doors, stairs, and a safe player spawn. A visually correct twin is not automatically a playable level.
 
 ## Architecture and integration guidance
