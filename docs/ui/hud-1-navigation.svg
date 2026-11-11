@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 1030" width="1280" height="1030" role="img" aria-labelledby="title desc">
+  <title id="title">HUD wireframe 1 of 4: normal navigation (head start)</title>
+  <desc id="desc">First-person view during the head-start countdown. Room objective top left, sun countdown top center, health bottom left, empty cover-badge slot above health, crosshair in the center.</desc>
+  <style>
+    text { font-family: "Segoe UI", Helvetica, Arial, sans-serif; }
+    .hud { fill: #0d0f12; fill-opacity: .85; stroke: #ffffff; stroke-opacity: .3; stroke-width: 2; }
+    .lbl { fill: #c9d1d9; font-size: 15px; font-weight: 600; letter-spacing: 1.5px; }
+    .big { fill: #ffffff; font-weight: 700; }
+    .mk circle { fill: #ffd43b; stroke: #1f2328; stroke-width: 2; }
+    .mk text { fill: #1f2328; font-size: 16px; font-weight: 700; text-anchor: middle; }
+    .lg-h { fill: #1f2328; font-size: 17px; font-weight: 700; }
+    .lg { fill: #3d444d; font-size: 15px; }
+  </style>
+  <defs>
+    <clipPath id="frame"><rect x="40" y="64" width="1200" height="675"/></clipPath>
+    <g id="sun">
+      <circle r="11" fill="#ffb000"/>
+      <g stroke="#ffb000" stroke-width="3" stroke-linecap="round">
+        <line x1="16" x2="22"/><line x1="-16" x2="-22"/><line y1="16" y2="22"/><line y1="-16" y2="-22"/>
+        <line x1="11.3" y1="11.3" x2="15.6" y2="15.6"/><line x1="-11.3" y1="11.3" x2="-15.6" y2="15.6"/>
+        <line x1="11.3" y1="-11.3" x2="15.6" y2="-15.6"/><line x1="-11.3" y1="-11.3" x2="-15.6" y2="-15.6"/>
+      </g>
+    </g>
+    <g id="door" fill="none" stroke="#ffffff" stroke-width="3">
+      <rect x="-16" y="-26" width="32" height="52" rx="3"/>
+      <circle cx="8" cy="2" r="3" fill="#ffffff" stroke="none"/>
+    </g>
+    <path id="heart" d="M0 10 C-14 0 -10 -12 0 -5 C10 -12 14 0 0 10 Z" fill="#ffffff"/>
+  </defs>
+
+  <rect width="1280" height="1030" fill="#ffffff"/>
+  <text x="40" y="44" class="lg-h" font-size="24">1 · Normal navigation (head start, no damage yet)</text>
+  <text x="1240" y="44" class="lg" text-anchor="end">1280 × 720 reference view, 16:9</text>
+
+  <!-- Scene: first-person PFT corridor, greyscale so the HUD reads on top of it -->
+  <g clip-path="url(#frame)">
+    <rect x="40" y="64" width="1200" height="675" fill="#2c3036"/>
+    <polygon points="40,64 1240,64 740,300 540,300" fill="#23272c"/>
+    <polygon points="40,739 1240,739 740,470 540,470" fill="#363a41"/>
+    <rect x="540" y="300" width="200" height="170" fill="#3d424a"/>
+    <rect x="610" y="360" width="60" height="110" fill="#2a2e34" stroke="#555b64" stroke-width="2"/>
+    <polygon points="220,297 300,311 300,599 220,642" fill="#24282d" stroke="#4a505a" stroke-width="2"/>
+    <polygon points="980,311 1060,297 1060,642 980,599" fill="#24282d" stroke="#4a505a" stroke-width="2"/>
+    <polygon points="992,262 1048,252 1048,276 992,284" fill="#4a505a"/>
+    <polygon points="590,110 690,110 676,134 604,134" fill="#3a3f47"/>
+    <polygon points="610,200 670,200 664,214 616,214" fill="#3a3f47"/>
+  </g>
+  <rect x="40" y="64" width="1200" height="675" fill="none" stroke="#1f2328" stroke-width="3"/>
+
+  <!-- 1. Objective -->
+  <rect class="hud" x="64" y="88" width="300" height="96" rx="10"/>
+  <use href="#door" x="100" y="136"/>
+  <text class="lbl" x="136" y="118">FIND ROOM</text>
+  <text class="big" x="136" y="168" font-size="52">1200</text>
+
+  <!-- 2. Sun countdown -->
+  <rect class="hud" x="470" y="88" width="340" height="96" rx="10"/>
+  <use href="#sun" x="512" y="136"/>
+  <text class="lbl" x="548" y="118">SUN EXPANDS IN</text>
+  <text class="big" x="548" y="162" font-size="44">18s</text>
+  <rect x="548" y="170" width="240" height="6" rx="3" fill="#ffffff" fill-opacity=".2"/>
+  <rect x="548" y="170" width="173" height="6" rx="3" fill="#ffb000"/>
+
+  <!-- 4. Empty cover-badge slot (hidden in game; outlined here only to show its reserved position) -->
+  <rect x="64" y="575" width="260" height="60" rx="10" fill="none" stroke="#ffffff" stroke-opacity=".45" stroke-width="2" stroke-dasharray="6 6"/>
+  <text x="194" y="611" fill="#c9d1d9" font-size="14" font-style="italic" text-anchor="middle">cover badge (after 0)</text>
+
+  <!-- 3. Health -->
+  <rect class="hud" x="64" y="651" width="380" height="64" rx="10"/>
+  <use href="#heart" x="92" y="684"/>
+  <text class="lbl" x="120" y="676">HEALTH</text>
+  <text class="big" x="424" y="677" font-size="18" text-anchor="end">100 / 100</text>
+  <rect x="120" y="686" width="304" height="14" rx="2" fill="#ffffff" fill-opacity=".15"/>
+  <rect x="120" y="686" width="304" height="14" rx="2" fill="#e6edf3"/>
+  <g stroke="#0d0f12" stroke-width="3">
+    <line x1="150.4" y1="686" x2="150.4" y2="700"/><line x1="180.8" y1="686" x2="180.8" y2="700"/>
+    <line x1="211.2" y1="686" x2="211.2" y2="700"/><line x1="241.6" y1="686" x2="241.6" y2="700"/>
+    <line x1="272" y1="686" x2="272" y2="700"/><line x1="302.4" y1="686" x2="302.4" y2="700"/>
+    <line x1="332.8" y1="686" x2="332.8" y2="700"/><line x1="363.2" y1="686" x2="363.2" y2="700"/>
+    <line x1="393.6" y1="686" x2="393.6" y2="700"/>
+  </g>
+
+  <!-- 5. Crosshair -->
+  <circle cx="640" cy="401" r="3" fill="#ffffff" fill-opacity=".85"/>
+  <circle cx="640" cy="401" r="11" fill="none" stroke="#ffffff" stroke-opacity=".45" stroke-width="2"/>
+
+  <!-- Annotation markers -->
+  <g class="mk"><circle cx="64" cy="88" r="14"/><text x="64" y="94">1</text></g>
+  <g class="mk"><circle cx="470" cy="88" r="14"/><text x="470" y="94">2</text></g>
+  <g class="mk"><circle cx="64" cy="651" r="14"/><text x="64" y="657">3</text></g>
+  <g class="mk"><circle cx="64" cy="575" r="14"/><text x="64" y="581">4</text></g>
+  <g class="mk"><circle cx="668" cy="378" r="14"/><text x="668" y="384">5</text></g>
+
+  <!-- Legend -->
+  <g class="mk"><circle cx="54" cy="786" r="14"/><text x="54" y="792">1</text></g>
+  <text class="lg-h" x="78" y="792">Room objective · top left</text>
+  <text class="lg" x="78" y="816">"Find Room" plus the room number, the largest type on screen.</text>
+  <text class="lg" x="78" y="836">Door icon. Visible from wheel handoff until the round ends.</text>
+
+  <g class="mk"><circle cx="54" cy="866" r="14"/><text x="54" y="872">2</text></g>
+  <text class="lg-h" x="78" y="872">Sun countdown · top center</text>
+  <text class="lg" x="78" y="896">Sun icon, "Sun expands in", whole seconds. The bar drains to empty</text>
+  <text class="lg" x="78" y="916">at zero, so the time left reads as a length as well as a number.</text>
+
+  <g class="mk"><circle cx="54" cy="946" r="14"/><text x="54" y="952">3</text></g>
+  <text class="lg-h" x="78" y="952">Health · bottom left</text>
+  <text class="lg" x="78" y="976">Heart icon, "100 / 100", and a bar cut into 10 segments, so the</text>
+  <text class="lg" x="78" y="996">amount reads by count and length, not by bar color.</text>
+
+  <g class="mk"><circle cx="674" cy="786" r="14"/><text x="674" y="792">4</text></g>
+  <text class="lg-h" x="698" y="792">Cover badge slot · above health (empty)</text>
+  <text class="lg" x="698" y="816">Nothing shows during the head start, because no damage is possible.</text>
+  <text class="lg" x="698" y="836">The slot is fixed so EXPOSED / SHADED always appear in one place.</text>
+
+  <g class="mk"><circle cx="674" cy="866" r="14"/><text x="674" y="872">5</text></g>
+  <text class="lg-h" x="698" y="872">Crosshair · center</text>
+  <text class="lg" x="698" y="896">The middle of the screen stays clear for reading room signs.</text>
+  <text class="lg" x="698" y="916">HUD panels keep to the top strip and the bottom-left corner.</text>
+</svg>

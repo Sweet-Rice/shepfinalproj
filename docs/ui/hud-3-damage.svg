@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 1030" width="1280" height="1030" role="img" aria-labelledby="title desc">
+  <title id="title">HUD wireframe 3 of 4: taking damage</title>
+  <desc id="desc">After zero, the player is in sunlight. An EXPOSED badge with a warning triangle and dashed border sits above health, diagonal stripes run along every screen edge, a chevron points toward the sun, health shows 62 of 100 with a striped segment for the last hit, and a toast says to find shade.</desc>
+  <style>
+    text { font-family: "Segoe UI", Helvetica, Arial, sans-serif; }
+    .hud { fill: #0d0f12; fill-opacity: .85; stroke: #ffffff; stroke-opacity: .3; stroke-width: 2; }
+    .lbl { fill: #c9d1d9; font-size: 15px; font-weight: 600; letter-spacing: 1.5px; }
+    .big { fill: #ffffff; font-weight: 700; }
+    .mk circle { fill: #ffd43b; stroke: #1f2328; stroke-width: 2; }
+    .mk text { fill: #1f2328; font-size: 16px; font-weight: 700; text-anchor: middle; }
+    .lg-h { fill: #1f2328; font-size: 17px; font-weight: 700; }
+    .lg { fill: #3d444d; font-size: 15px; }
+  </style>
+  <defs>
+    <clipPath id="frame"><rect x="40" y="64" width="1200" height="675"/></clipPath>
+    <g id="sun">
+      <circle r="11" fill="#ffb000"/>
+      <g stroke="#ffb000" stroke-width="3" stroke-linecap="round">
+        <line x1="16" x2="22"/><line x1="-16" x2="-22"/><line y1="16" y2="22"/><line y1="-16" y2="-22"/>
+        <line x1="11.3" y1="11.3" x2="15.6" y2="15.6"/><line x1="-11.3" y1="11.3" x2="-15.6" y2="15.6"/>
+        <line x1="11.3" y1="-11.3" x2="15.6" y2="-15.6"/><line x1="-11.3" y1="-11.3" x2="-15.6" y2="-15.6"/>
+      </g>
+    </g>
+    <g id="door" fill="none" stroke="#ffffff" stroke-width="3">
+      <rect x="-16" y="-26" width="32" height="52" rx="3"/>
+      <circle cx="8" cy="2" r="3" fill="#ffffff" stroke="none"/>
+    </g>
+    <path id="heart" d="M0 10 C-14 0 -10 -12 0 -5 C10 -12 14 0 0 10 Z" fill="#ffffff"/>
+    <pattern id="burn" width="18" height="18" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="9" height="18" fill="#ff7a33" fill-opacity=".6"/>
+    </pattern>
+    <pattern id="ghost" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="3" height="6" fill="#ffffff" fill-opacity=".75"/>
+    </pattern>
+    <pattern id="expand" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="12" height="12" fill="#ffb000" fill-opacity=".35"/>
+      <rect width="6" height="12" fill="#ffb000"/>
+    </pattern>
+  </defs>
+
+  <rect width="1280" height="1030" fill="#ffffff"/>
+  <text x="40" y="44" class="lg-h" font-size="24">3 · Taking damage (exposed after zero)</text>
+  <text x="1240" y="44" class="lg" text-anchor="end">1280 × 720 reference view, 16:9</text>
+
+  <!-- Scene: first-person PFT corridor, greyscale so the HUD reads on top of it -->
+  <g clip-path="url(#frame)">
+    <rect x="40" y="64" width="1200" height="675" fill="#2c3036"/>
+    <polygon points="40,64 1240,64 740,300 540,300" fill="#23272c"/>
+    <polygon points="40,739 1240,739 740,470 540,470" fill="#363a41"/>
+    <rect x="540" y="300" width="200" height="170" fill="#3d424a"/>
+    <rect x="610" y="360" width="60" height="110" fill="#2a2e34" stroke="#555b64" stroke-width="2"/>
+    <polygon points="220,297 300,311 300,599 220,642" fill="#24282d" stroke="#4a505a" stroke-width="2"/>
+    <polygon points="980,311 1060,297 1060,642 980,599" fill="#24282d" stroke="#4a505a" stroke-width="2"/>
+    <polygon points="992,262 1048,252 1048,276 992,284" fill="#4a505a"/>
+    <polygon points="590,110 690,110 676,134 604,134" fill="#3a3f47"/>
+    <polygon points="610,200 670,200 664,214 616,214" fill="#3a3f47"/>
+  </g>
+  <!-- Sunlight washing in from the Commons side (behind and to the right) -->
+  <g clip-path="url(#frame)">
+    <polygon points="1240,64 1240,739 700,739 860,420" fill="#ffd27a" fill-opacity=".14"/>
+    <!-- 2. Damage edge: diagonal stripes on all four edges -->
+    <path d="M40 64 H1240 V739 H40 Z M76 100 V703 H1204 V100 Z" fill="url(#burn)" fill-rule="evenodd"/>
+  </g>
+  <rect x="40" y="64" width="1200" height="675" fill="none" stroke="#1f2328" stroke-width="3"/>
+
+  <!-- Objective (unchanged) -->
+  <rect class="hud" x="64" y="88" width="300" height="96" rx="10"/>
+  <use href="#door" x="100" y="136"/>
+  <text class="lbl" x="136" y="118">FIND ROOM</text>
+  <text class="big" x="136" y="168" font-size="52">1200</text>
+
+  <!-- 5. Status after zero -->
+  <rect class="hud" x="470" y="88" width="340" height="96" rx="10"/>
+  <use href="#sun" x="512" y="136"/>
+  <text class="lbl" x="548" y="118">SUN EXPANDING</text>
+  <text class="big" x="548" y="158" font-size="26">Reach <tspan font-size="30">1200</tspan> alive</text>
+  <rect x="548" y="170" width="240" height="6" rx="3" fill="url(#expand)"/>
+
+  <!-- 6. Damage toast -->
+  <rect class="hud" x="430" y="216" width="420" height="48" rx="24"/>
+  <polygon points="456,251 468,229 480,251" fill="#ffb000"/>
+  <text x="468" y="249" fill="#0d0f12" font-size="15" font-weight="700" text-anchor="middle">!</text>
+  <text x="656" y="247" fill="#ffffff" font-size="20" font-weight="600" text-anchor="middle">You're in the sunlight! Find shade.</text>
+
+  <!-- 3. Sun direction chevron (right edge, toward the hazard) -->
+  <rect class="hud" x="1126" y="364" width="74" height="92" rx="10"/>
+  <use href="#sun" x="1163" y="394"/>
+  <text x="1163" y="440" fill="#ffffff" font-size="14" font-weight="700" text-anchor="middle" letter-spacing="1.5">SUN</text>
+  <polygon points="1206,384 1232,410 1206,436" fill="#ffb000" stroke="#0d0f12" stroke-width="2"/>
+
+  <!-- 1. Cover badge: EXPOSED -->
+  <rect x="64" y="575" width="260" height="60" rx="10" fill="#0d0f12" fill-opacity=".9" stroke="#ffb000" stroke-width="4" stroke-dasharray="10 6"/>
+  <polygon points="82,624 102,587 122,624" fill="#ffb000"/>
+  <text x="102" y="619" fill="#0d0f12" font-size="22" font-weight="800" text-anchor="middle">!</text>
+  <text x="136" y="604" fill="#ffffff" font-size="22" font-weight="800" letter-spacing="1">EXPOSED</text>
+  <text x="136" y="624" fill="#c9d1d9" font-size="14">in sunlight · losing health</text>
+
+  <!-- 4. Health: 62 / 100 with a striped segment for the last hit -->
+  <rect class="hud" x="64" y="651" width="380" height="64" rx="10"/>
+  <use href="#heart" x="92" y="684"/>
+  <text class="lbl" x="120" y="676">HEALTH</text>
+  <text class="big" x="424" y="677" font-size="18" text-anchor="end">62 / 100</text>
+  <rect x="120" y="686" width="304" height="14" rx="2" fill="#ffffff" fill-opacity=".15"/>
+  <rect x="120" y="686" width="188.5" height="14" rx="2" fill="#e6edf3"/>
+  <rect x="308.5" y="686" width="30.4" height="14" fill="url(#ghost)"/>
+  <g stroke="#0d0f12" stroke-width="3">
+    <line x1="150.4" y1="686" x2="150.4" y2="700"/><line x1="180.8" y1="686" x2="180.8" y2="700"/>
+    <line x1="211.2" y1="686" x2="211.2" y2="700"/><line x1="241.6" y1="686" x2="241.6" y2="700"/>
+    <line x1="272" y1="686" x2="272" y2="700"/><line x1="302.4" y1="686" x2="302.4" y2="700"/>
+    <line x1="332.8" y1="686" x2="332.8" y2="700"/><line x1="363.2" y1="686" x2="363.2" y2="700"/>
+    <line x1="393.6" y1="686" x2="393.6" y2="700"/>
+  </g>
+
+  <!-- Crosshair -->
+  <circle cx="640" cy="401" r="3" fill="#ffffff" fill-opacity=".85"/>
+  <circle cx="640" cy="401" r="11" fill="none" stroke="#ffffff" stroke-opacity=".45" stroke-width="2"/>
+
+  <!-- Annotation markers -->
+  <g class="mk"><circle cx="64" cy="575" r="14"/><text x="64" y="581">1</text></g>
+  <g class="mk"><circle cx="420" cy="64" r="14"/><text x="420" y="70">2</text></g>
+  <g class="mk"><circle cx="1126" cy="364" r="14"/><text x="1126" y="370">3</text></g>
+  <g class="mk"><circle cx="64" cy="651" r="14"/><text x="64" y="657">4</text></g>
+  <g class="mk"><circle cx="470" cy="88" r="14"/><text x="470" y="94">5</text></g>
+  <g class="mk"><circle cx="430" cy="216" r="14"/><text x="430" y="222">6</text></g>
+
+  <!-- Legend -->
+  <g class="mk"><circle cx="54" cy="786" r="14"/><text x="54" y="792">1</text></g>
+  <text class="lg-h" x="78" y="792">EXPOSED badge · above health</text>
+  <text class="lg" x="78" y="816">Warning triangle, the word EXPOSED, and a dashed border. Three cues</text>
+  <text class="lg" x="78" y="836">that each work without color. Shows only while damage is applied.</text>
+
+  <g class="mk"><circle cx="54" cy="866" r="14"/><text x="54" y="872">2</text></g>
+  <text class="lg-h" x="78" y="872">Striped screen edges · full frame border</text>
+  <text class="lg" x="78" y="896">Diagonal stripes around the whole view, outside the HUD panels.</text>
+  <text class="lg" x="78" y="916">A texture, not a red tint, so it still reads in greyscale.</text>
+
+  <g class="mk"><circle cx="54" cy="946" r="14"/><text x="54" y="952">3</text></g>
+  <text class="lg-h" x="78" y="952">Sun direction · screen edge nearest the sun</text>
+  <text class="lg" x="78" y="976">Sun icon, "SUN", and a chevron pointing at the hazard, so the</text>
+  <text class="lg" x="78" y="996">player knows which way is away. Slides around the edge as they turn.</text>
+
+  <g class="mk"><circle cx="674" cy="786" r="14"/><text x="674" y="792">4</text></g>
+  <text class="lg-h" x="698" y="792">Health drops · bottom left</text>
+  <text class="lg" x="698" y="816">"62 / 100" and fewer full segments. The striped segment marks the</text>
+  <text class="lg" x="698" y="836">latest loss for ~1 s, then empties. No regeneration.</text>
+
+  <g class="mk"><circle cx="674" cy="866" r="14"/><text x="674" y="872">5</text></g>
+  <text class="lg-h" x="698" y="872">Status after zero · top center</text>
+  <text class="lg" x="698" y="896">"Sun expanding" and "Reach 1200 alive". The bar is striped and full:</text>
+  <text class="lg" x="698" y="916">there is no second timer, and the round can still be won.</text>
+
+  <g class="mk"><circle cx="674" cy="946" r="14"/><text x="674" y="952">6</text></g>
+  <text class="lg-h" x="698" y="952">Damage toast · under the status</text>
+  <text class="lg" x="698" y="976">"You're in the sunlight! Find shade." once per exposure, about 2 s.</text>
+  <text class="lg" x="698" y="996">Under 25% health it becomes "Low health. Get to shade or 1200."</text>
+</svg>
