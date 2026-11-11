@@ -1,0 +1,42 @@
+name: Repository checks
+
+on:
+  pull_request:
+  push:
+
+permissions:
+  contents: read
+
+jobs:
+  repo-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check pull request whitespace
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: git diff --check "$BASE_SHA" HEAD
+      - name: Check relative Markdown links
+        run: python3 scripts/check_markdown_links.py
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Check browser prototype JavaScript
+        shell: bash
+        run: |
+          if [[ -d prototypes/room-wheel ]]; then
+            while IFS= read -r -d '' source; do
+              node --check "$source"
+            done < <(find prototypes/room-wheel -type f -name '*.js' -print0)
+            if [[ -f prototypes/room-wheel/wheel-logic.test.js ]]; then
+              node prototypes/room-wheel/wheel-logic.test.js
+            fi
+          else
+            echo 'The room wheel prototype has not been added to this branch.'
+          fi
