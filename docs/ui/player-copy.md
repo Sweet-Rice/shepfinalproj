@@ -10,10 +10,10 @@ Short on-screen strings for one round of the PFT sun-survival game. Resolves iss
 2. A classroom wheel spins and lands on the target room.
 3. A countdown runs (baseline 25 s, tunable 20–30 s).
 4. At zero, the sun starts expanding. Exposed players take damage, and shade protects them.
-5. Reaching the target room alive wins. This still counts after the countdown hits zero.
-6. When health reaches zero, the round is lost. The end screen offers **Retry** (same room) or **Spin Again** (new room).
+5. Checking the target door while alive wins, including after the countdown hits zero.
+6. When health reaches zero, the round is lost. The end screen offers **Retry** (same room) or **Spin Again** (another draw).
 
-> The README describes the sun, damage, cover, and win/loss rules. The wheel, countdown, Commons spawn, and retry/spin-again flow come from the team's newer design discussion and are not in the README yet. See [Open questions](#open-questions).
+The [gameplay design](../gameplay-design.md) defines the round flow. See [Open questions](#open-questions) for presentation choices.
 
 ## Writing rules
 
@@ -21,7 +21,7 @@ Short on-screen strings for one round of the PFT sun-survival game. Resolves iss
 - **Readable at a glance.** HUD toasts should be no more than about 40 characters and readable in under 2 s. Banners and end-screen titles should be no more than about 24 characters. Body lines should be no more than about 70 characters.
 - **Plain verbs.** Use *Find*, *Get to*, *Get out of the light*, *Retry*, and *Spin Again*. Avoid jargon such as "exposure" or "LOS".
 - **Zero is not game over.** Countdown copy says the sun *starts expanding* at zero. It never says "time's up" or "you lose".
-- **Retry ≠ Spin Again.** Retry always says **same room** and shows `{ROOM}`. Spin Again always says **new room** and never shows the old number as the goal.
+- **Retry and Spin Again.** Retry names the room it will reuse. Spin Again describes another draw and shows the room when the wheel settles.
 - Sentence case, no exclamation-mark spam (one at most per screen), and no ALL CAPS except the room number when the font supports it.
 
 ### Placeholders
@@ -71,7 +71,7 @@ The countdown shows as a number on the HUD. These strings are the label and the 
 | ID | Text | Placeholders | Max len | When it shows |
 | --- | --- | --- | --- | --- |
 | `DAMAGE_EXPOSED` | You're in the sunlight! Find shade. | – | 36 | Toast on first damage tick after leaving cover. Throttle to once per exposure. |
-| `DAMAGE_CLOSE` | Too close to the sun! | – | 22 | When in the near-damage band (higher damage rate). |
+| `DAMAGE_CLOSE` | Too close to the sun! | – | 22 | Optional if the team retains a higher damage rate near the sun. |
 | `DAMAGE_LOW_HEALTH` | Low health. Get to shade or **{ROOM}**. | `{ROOM}` | 38 | Once when health first drops below ~25%. |
 | `EXPOSURE_ICON_TOOLTIP` | Exposed | – | 8 | Opposite state of `SHELTER_ICON_TOOLTIP`. |
 
@@ -111,15 +111,15 @@ Use this for the **same target room** with a fresh round: full health, new count
 
 ## 9. Spin again
 
-Use this for a **new target room**: the wheel spins again, with full health and a new countdown.
+Use this to draw a room again with full health and a fresh countdown. The wheel can pick the same room.
 
 | ID | Text | Placeholders | Max len | When it shows |
 | --- | --- | --- | --- | --- |
 | `BTN_SPIN_AGAIN` | Spin Again | – | 12 | End-screen button (win and loss). |
-| `BTN_SPIN_AGAIN_HINT` | New room. New spin. | – | 20 | Small text under/next to the button, or tooltip. |
-| `SPIN_AGAIN_START` | Spinning for a new room… | – | 26 | Replaces `WHEEL_SPINNING` when the wheel is triggered by Spin Again. Then the normal `WHEEL_RESULT_*` strings show. |
+| `BTN_SPIN_AGAIN_HINT` | Spin for a room. | – | 20 | Small text under or next to the button, or tooltip. |
+| `SPIN_AGAIN_START` | Spinning for your room… | – | 26 | Replaces `WHEEL_SPINNING` when the wheel is triggered by Spin Again. Then the normal `WHEEL_RESULT_*` strings show. |
 
-**Why these can't be confused:** Retry always names the room it will reuse, and Spin Again always says *new*. On the end screen, put the two buttons side by side with Retry on the left, so the room number on the left button is the first thing a player sees.
+On the end screen, put the two buttons side by side with Retry on the left. Its label names the room the player will keep.
 
 ## Example: one round, top to bottom
 
@@ -140,15 +140,13 @@ You made it! — Room 1200, with the sun right behind you.
 
 - **Room number easy to spot:** `{ROOM}` is in every assignment, objective, wrong-room, result, and retry string, with emphasis rules above. The wheel title is just `Room {ROOM}`.
 - **Zero starts expansion, still winnable:** `COUNTDOWN_LABEL` says the sun *expands* at zero. `COUNTDOWN_ZERO_SUB` and `COUNTDOWN_EXPIRED_LABEL` say to reach the room alive, and `WIN_SUB_AFTER_ZERO` rewards it.
-- **Retry vs. spin again distinct:** Retry says *same room* and shows `{ROOM}`. Spin Again says *new room* and shows no room.
+- **Retry and Spin Again are distinct:** Retry names the room. Spin Again starts another draw.
 
 ## Open questions
 
-1. **README sync.** The README doesn't yet describe the wheel, the countdown, the Commons spawn, or the retry/spin-again end screen. Should someone add those to the design baseline so this copy matches the source of truth?
-2. **Room ID format.** Are rooms shown as signed in PFT (`1200`) or with a prefix (`PFT 1200`)? Are there any letters or suffixes (`1263A`)? This affects max lengths.
-3. **Shade/damage toasts before zero.** Before expansion there's no damage, so shelter/damage strings are assumed to show only after zero. Confirm.
-4. **Can Spin Again land on the same room?** If yes, should the wheel avoid the previous room, or should the copy acknowledge it ("Same room again!")?
-5. **Is Retry offered after a win?** It's proposed on both end screens. Drop it from the win screen if replaying a won room has no point.
-6. **Countdown display.** Should the timer show whole seconds only (assumed), and should the warnings be at 10 s and 5 s if the countdown is tuned to 20 s?
-7. **Tone.** Is the playful/urgent voice right ("The sun got you"), or does the team want something drier for the class demo?
-8. **Localization.** Assumed English-only. If not, keep all strings in a String Table and avoid building sentences by concatenation.
+1. **Room ID format.** Are rooms shown as signed in PFT (`1200`) or with a prefix (`PFT 1200`)? Are there any letters or suffixes (`1263A`)? This affects max lengths.
+2. **Shade feedback before zero.** Should the HUD show shelter status during the head start?
+3. **Is Retry offered after a win?** It's proposed on both end screens. Drop it from the win screen if replaying a won room has no point.
+4. **Countdown display.** Should the timer show whole seconds only (assumed), and should the warnings be at 10 s and 5 s if the countdown is tuned to 20 s?
+5. **Tone.** Is the playful/urgent voice right ("The sun got you"), or does the team want something drier for the class demo?
+6. **Localization.** Assumed English-only. Keep strings in a String Table if additional languages are added.

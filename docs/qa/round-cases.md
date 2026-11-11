@@ -10,12 +10,12 @@ Reproducible manual test cases for one round of the PFT sun game: wheel handoff 
 | --- | --- |
 | [Original README gameplay baseline](https://github.com/Sweet-Rice/shepfinalproj/blob/ab83623db70f3ae0870bad88106a19f9a9a29a84/README.md#gameplay-baseline), rule 9 | *"Within an encounter update, classroom success is checked before damage."* This historical permalink preserves the ordering source even if the README is reorganized. |
 | [Issue #25](https://github.com/Sweet-Rice/shepfinalproj/issues/25) | Requires reproducible lifecycle cases, a right-classroom check in the same update as potentially lethal damage, and execution results left Pending until a build is tested. |
-| [README → Verification checklist](../../README.md#verification-checklist) | Row *"Enter target with health low enough for the next hit to be lethal → Victory takes precedence over that update's damage."* |
-| [Issue #18](https://github.com/Sweet-Rice/shepfinalproj/issues/18) / [PR #34](https://github.com/Sweet-Rice/shepfinalproj/pull/34) (`docs/gameplay-design.md`, not yet merged) | Commons exterior-door spawn, wheel handoff, 25 s countdown (20–30 s tuning), no damage during head start, late win after zero, retry same room / spin again. |
+| [README verification checklist](../../README.md#verification-checklist) | A living player's valid target-door check wins before potentially lethal damage in the same update. |
+| [Gameplay design](../gameplay-design.md) | Commons exterior-door spawn, wheel handoff, 25 s countdown (20–30 s tuning), no damage during head start, late win after zero, retry same room / spin again. |
 | [Issue #29](https://github.com/Sweet-Rice/shepfinalproj/issues/29) | Movement and countdown start together when the wheel settles; same-room retry resets time and health; spin again chooses a room for a new round. |
 | [Issue #31](https://github.com/Sweet-Rice/shepfinalproj/issues/31) | The sun begins spreading at countdown zero; shade protects; an alive player can win after zero. |
 
-If PR #34 changes before merging, re-check the cases marked with a source of #18/#34.
+When the gameplay design changes, re-check the affected cases before running them.
 
 ## Tunable values
 

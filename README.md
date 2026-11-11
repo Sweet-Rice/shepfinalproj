@@ -15,7 +15,7 @@ The hall is an existing Unreal project, not a model we need to rebuild. Our work
 ### Status and design reference
 
 - **Authoritative gameplay design:** Intended gameplay rules, phased timing, and loop architecture are documented in **[docs/gameplay-design.md](docs/gameplay-design.md)** (tracked under [Issue #18](https://github.com/Sweet-Rice/shepfinalproj/issues/18)). Refer to that document for design specifications.
-- **Documentation-only repository:** This repository currently contains design documentation only. No playable sun encounter, Unreal source code, or building assets have been committed here.
+- **Repository contents:** Design and playtest documentation, plus a [standalone browser room wheel](prototypes/room-wheel/README.md). The playable encounter, Unreal source, and building assets are tracked through the team's build handoff.
 - **Build and implementation status:** Current build behavior and in-editor features remain unverified until supported by hands-on testing and shareable evidence (revision tracking, gameplay clips, screenshots) under [Issue #17](https://github.com/Sweet-Rice/shepfinalproj/issues/17), not inferences from closed tickets.
 - **Unverified architecture and Blueprint names:** All component and class names mentioned in this README (such as `BP_SunEscapeGameMode`, `BP_IndoorSun`, `BP_ClassroomGoal`, `WBP_SunEscapeHUD`) are proposed conceptual abstractions, not confirmed assets in the digital twin project.
 - **Verified digital twin baseline:** Archive metadata and configuration verified from `PFTDigitalTwin.zip` are preserved below in [Existing digital twin](#existing-digital-twin).
