@@ -1,0 +1,7 @@
+checkpoint_id,checkpoint_name,placeholder,player_route_m,sun_path_m,dwell_s,exposed,spread_reference,source_type,distance_source,notes
+CP0,Spawn inside Commons exterior door,yes,0,10,0,yes,no,estimate,Guess; replace with #19 survey,Sun origin assumed to be the Commons centre about 10 m from the spawn door.
+CP1,Commons exit into main corridor (turn 1),yes,25,35,2,yes,no,estimate,Guess; replace with #19 survey,Short pause to pick a direction from hall signs.
+CP2,Main corridor midpoint (exposed),yes,55,65,0,yes,no,estimate,Guess; replace with #19 survey,Long exposed stretch; candidate place to put shade.
+CP3,Corridor junction (turn 2),yes,80,90,3,yes,no,estimate,Guess; replace with #19 survey,Pause to read room-number signs.
+CP4,Side corridor end (last exposed corridor),yes,100,110,0,yes,yes,estimate,Guess; replace with #19 survey,Spread reference: the front should reach this point at the 60 s target.
+CP5,Destination classroom door,yes,115,125,0,no,no,estimate,Guess; replace with #19 survey,Correct door check wins on arrival.
