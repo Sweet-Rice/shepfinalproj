@@ -117,6 +117,8 @@ To manage scope and allow incremental verification, integration proceeds in thre
 
 Verification requires evidence from in-editor or packaged gameplay tests (tracked under [#17](https://github.com/Sweet-Rice/shepfinalproj/issues/17) and [#25](https://github.com/Sweet-Rice/shepfinalproj/issues/25)). Do not mark items complete without recorded test results.
 
+Use the [round lifecycle cases](docs/qa/round-cases.md) for reproducible steps and a results log.
+
 | Scenario | Expected result | Status |
 | --- | --- | --- |
 | Wheel handoff | At the Commons spawn, the wheel settles on one eligible room; the objective, movement, and configured countdown start together exactly once. | Unverified |
