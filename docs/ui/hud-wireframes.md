@@ -41,7 +41,7 @@ The middle of the screen stays empty. Wayfinding depends on reading PFT's room s
 
 - At 10 s, the `COUNTDOWN_WARN_10` toast shows: "10 seconds. Find shade or get to 1200."
 - At 5 s, the countdown panel **changes shape**. It gets a thick border and two pulse outlines, and the number grows from 44 to 60 px. The `COUNTDOWN_WARN_5` toast ("Sun expands in 5…") has a warning triangle. It counts down 4, 3, 2, 1.
-- At 0, the toast becomes a short banner in the same spot. It shows `COUNTDOWN_ZERO_TITLE` ("The sun is expanding") above `COUNTDOWN_ZERO_SUB` ("You can still make it. Get to Room 1200."), for about 2 s. After that, the panel changes to the state shown in wireframes 3 and 4.
+- At 0, the toast becomes a short banner in the same spot. It shows `COUNTDOWN_ZERO_TITLE` ("The sun is expanding") above `COUNTDOWN_ZERO_SUB` ("You can still make it. Get to Room 1200."), for about 2 s. Then show **SUN EXPANDING**. Ahead of the front, keep the damage cues hidden and health steady. Use the exposed state when the front reaches an unshaded player and the sheltered state when shade protects them from the front.
 - The objective and health don't change. The warning must not cover the room number, because zero doesn't end the round.
 
 ## 3. Taking damage
