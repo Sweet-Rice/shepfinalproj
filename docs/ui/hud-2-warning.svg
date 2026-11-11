@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 1030" width="1280" height="1030" role="img" aria-labelledby="title desc">
+  <title id="title">HUD wireframe 2 of 4: expansion warning</title>
+  <desc id="desc">Five seconds before the sun starts expanding. The countdown panel grows a thick border, pulse outlines and a larger number, and a toast under it repeats the warning in words. Objective and health are unchanged.</desc>
+  <style>
+    text { font-family: "Segoe UI", Helvetica, Arial, sans-serif; }
+    .hud { fill: #0d0f12; fill-opacity: .85; stroke: #ffffff; stroke-opacity: .3; stroke-width: 2; }
+    .lbl { fill: #c9d1d9; font-size: 15px; font-weight: 600; letter-spacing: 1.5px; }
+    .big { fill: #ffffff; font-weight: 700; }
+    .mk circle { fill: #ffd43b; stroke: #1f2328; stroke-width: 2; }
+    .mk text { fill: #1f2328; font-size: 16px; font-weight: 700; text-anchor: middle; }
+    .lg-h { fill: #1f2328; font-size: 17px; font-weight: 700; }
+    .lg { fill: #3d444d; font-size: 15px; }
+  </style>
+  <defs>
+    <clipPath id="frame"><rect x="40" y="64" width="1200" height="675"/></clipPath>
+    <g id="sun">
+      <circle r="11" fill="#ffb000"/>
+      <g stroke="#ffb000" stroke-width="3" stroke-linecap="round">
+        <line x1="16" x2="22"/><line x1="-16" x2="-22"/><line y1="16" y2="22"/><line y1="-16" y2="-22"/>
+        <line x1="11.3" y1="11.3" x2="15.6" y2="15.6"/><line x1="-11.3" y1="11.3" x2="-15.6" y2="15.6"/>
+        <line x1="11.3" y1="-11.3" x2="15.6" y2="-15.6"/><line x1="-11.3" y1="-11.3" x2="-15.6" y2="-15.6"/>
+      </g>
+    </g>
+    <g id="door" fill="none" stroke="#ffffff" stroke-width="3">
+      <rect x="-16" y="-26" width="32" height="52" rx="3"/>
+      <circle cx="8" cy="2" r="3" fill="#ffffff" stroke="none"/>
+    </g>
+    <path id="heart" d="M0 10 C-14 0 -10 -12 0 -5 C10 -12 14 0 0 10 Z" fill="#ffffff"/>
+  </defs>
+
+  <rect width="1280" height="1030" fill="#ffffff"/>
+  <text x="40" y="44" class="lg-h" font-size="24">2 · Expansion warning (5 s left)</text>
+  <text x="1240" y="44" class="lg" text-anchor="end">1280 × 720 reference view, 16:9</text>
+
+  <!-- Scene: first-person PFT corridor, greyscale so the HUD reads on top of it -->
+  <g clip-path="url(#frame)">
+    <rect x="40" y="64" width="1200" height="675" fill="#2c3036"/>
+    <polygon points="40,64 1240,64 740,300 540,300" fill="#23272c"/>
+    <polygon points="40,739 1240,739 740,470 540,470" fill="#363a41"/>
+    <rect x="540" y="300" width="200" height="170" fill="#3d424a"/>
+    <rect x="610" y="360" width="60" height="110" fill="#2a2e34" stroke="#555b64" stroke-width="2"/>
+    <polygon points="220,297 300,311 300,599 220,642" fill="#24282d" stroke="#4a505a" stroke-width="2"/>
+    <polygon points="980,311 1060,297 1060,642 980,599" fill="#24282d" stroke="#4a505a" stroke-width="2"/>
+    <polygon points="992,262 1048,252 1048,276 992,284" fill="#4a505a"/>
+    <polygon points="590,110 690,110 676,134 604,134" fill="#3a3f47"/>
+    <polygon points="610,200 670,200 664,214 616,214" fill="#3a3f47"/>
+  </g>
+  <rect x="40" y="64" width="1200" height="675" fill="none" stroke="#1f2328" stroke-width="3"/>
+
+  <!-- 3. Objective (unchanged) -->
+  <rect class="hud" x="64" y="88" width="300" height="96" rx="10"/>
+  <use href="#door" x="100" y="136"/>
+  <text class="lbl" x="136" y="118">FIND ROOM</text>
+  <text class="big" x="136" y="168" font-size="52">1200</text>
+
+  <!-- 1. Escalated countdown: pulse outlines, thick border, bigger number -->
+  <rect x="454" y="72" width="372" height="128" rx="16" fill="none" stroke="#ffb000" stroke-opacity=".25" stroke-width="2"/>
+  <rect x="462" y="80" width="356" height="112" rx="13" fill="none" stroke="#ffb000" stroke-opacity=".5" stroke-width="2"/>
+  <rect x="470" y="88" width="340" height="96" rx="10" fill="#0d0f12" fill-opacity=".9" stroke="#ffb000" stroke-width="4"/>
+  <use href="#sun" x="512" y="136"/>
+  <text class="lbl" x="548" y="116">SUN EXPANDS IN</text>
+  <text class="big" x="548" y="166" font-size="60">5s</text>
+  <rect x="548" y="172" width="240" height="6" rx="3" fill="#ffffff" fill-opacity=".2"/>
+  <rect x="548" y="172" width="48" height="6" rx="3" fill="#ffb000"/>
+
+  <!-- 2. Warning toast -->
+  <rect class="hud" x="470" y="216" width="340" height="48" rx="24"/>
+  <polygon points="502,251 514,229 526,251" fill="#ffb000"/>
+  <text x="514" y="249" fill="#0d0f12" font-size="15" font-weight="700" text-anchor="middle">!</text>
+  <text x="664" y="247" fill="#ffffff" font-size="20" font-weight="600" text-anchor="middle">Sun expands in 5…</text>
+
+  <!-- 4. Health (still full) -->
+  <rect class="hud" x="64" y="651" width="380" height="64" rx="10"/>
+  <use href="#heart" x="92" y="684"/>
+  <text class="lbl" x="120" y="676">HEALTH</text>
+  <text class="big" x="424" y="677" font-size="18" text-anchor="end">100 / 100</text>
+  <rect x="120" y="686" width="304" height="14" rx="2" fill="#e6edf3"/>
+  <g stroke="#0d0f12" stroke-width="3">
+    <line x1="150.4" y1="686" x2="150.4" y2="700"/><line x1="180.8" y1="686" x2="180.8" y2="700"/>
+    <line x1="211.2" y1="686" x2="211.2" y2="700"/><line x1="241.6" y1="686" x2="241.6" y2="700"/>
+    <line x1="272" y1="686" x2="272" y2="700"/><line x1="302.4" y1="686" x2="302.4" y2="700"/>
+    <line x1="332.8" y1="686" x2="332.8" y2="700"/><line x1="363.2" y1="686" x2="363.2" y2="700"/>
+    <line x1="393.6" y1="686" x2="393.6" y2="700"/>
+  </g>
+
+  <!-- Crosshair -->
+  <circle cx="640" cy="401" r="3" fill="#ffffff" fill-opacity=".85"/>
+  <circle cx="640" cy="401" r="11" fill="none" stroke="#ffffff" stroke-opacity=".45" stroke-width="2"/>
+
+  <!-- Annotation markers -->
+  <g class="mk"><circle cx="454" cy="72" r="14"/><text x="454" y="78">1</text></g>
+  <g class="mk"><circle cx="470" cy="216" r="14"/><text x="470" y="222">2</text></g>
+  <g class="mk"><circle cx="64" cy="88" r="14"/><text x="64" y="94">3</text></g>
+  <g class="mk"><circle cx="64" cy="651" r="14"/><text x="64" y="657">4</text></g>
+
+  <!-- Legend -->
+  <g class="mk"><circle cx="54" cy="786" r="14"/><text x="54" y="792">1</text></g>
+  <text class="lg-h" x="78" y="792">Countdown escalates · top center</text>
+  <text class="lg" x="78" y="816">From 5 s: thick border, two pulse outlines, number grows 44 → 60 px.</text>
+  <text class="lg" x="78" y="836">The change is in size and shape, so it reads in greyscale too.</text>
+
+  <g class="mk"><circle cx="54" cy="866" r="14"/><text x="54" y="872">2</text></g>
+  <text class="lg-h" x="78" y="872">Warning toast · under the countdown</text>
+  <text class="lg" x="78" y="896">"Sun expands in 5…" with a warning triangle, then 4, 3, 2, 1. At 0 it</text>
+  <text class="lg" x="78" y="916">becomes the "The sun is expanding" banner (see the Markdown notes).</text>
+
+  <g class="mk"><circle cx="674" cy="786" r="14"/><text x="674" y="792">3</text></g>
+  <text class="lg-h" x="698" y="792">Objective unchanged · top left</text>
+  <text class="lg" x="698" y="816">Warnings never cover the room number. Zero is not game over, so</text>
+  <text class="lg" x="698" y="836">the goal stays the loudest thing on screen.</text>
+
+  <g class="mk"><circle cx="674" cy="866" r="14"/><text x="674" y="872">4</text></g>
+  <text class="lg-h" x="698" y="872">Health still full · bottom left</text>
+  <text class="lg" x="698" y="896">No damage is possible before zero, so health and the cover badge</text>
+  <text class="lg" x="698" y="916">slot stay quiet. Only the countdown area gets louder.</text>
+</svg>
