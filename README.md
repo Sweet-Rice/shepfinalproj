@@ -132,6 +132,8 @@ Verification requires evidence from in-editor or packaged gameplay tests (tracke
 | Spin again | Defeat menu "Spin Again" starts a fresh round, resetting state and spinning the wheel for a room assignment. | Unverified |
 | Packaged build validation | Packaged Windows executable loads map, plugins, assets, UI, and executes the lifecycle identically to PIE. | Unverified |
 
+Use the [freshman playtest kit](docs/playtesting/facilitator-script.md) and [results sheet](data/playtest-results.csv) once a teammate can host a verified build. The starter rows are planning slots.
+
 ## Handoff rules for group members and their agents
 
 1. **Inspect before editing.** This repository currently documents an external project archive. Verify files and check out actual assets before assuming source paths or assets exist.
