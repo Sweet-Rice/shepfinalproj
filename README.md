@@ -6,32 +6,34 @@ But is it TRULY the final project?
 
 ## What we are making
 
-A survival-and-navigation game inside the digital twin of **Patrick F. Taylor Hall (PFT)** at LSU. At the beginning of a round, the player receives a specific classroom to find. A dangerous indoor "sun" threatens the player while they navigate the building. Reaching the assigned classroom wins; losing all health before reaching it loses.
+*PFT Sun Run* is a first-person wayfinding and survival game set inside the digital twin of **Patrick F. Taylor Hall (PFT)** at LSU, designed to help freshmen learn navigation across the building.
 
-The building is an existing Unreal project, not a model we need to recreate. Our work is to make the existing environment playable and add the encounter, classroom objectives, HUD, and round lifecycle.
+The player spawns in the Commons, spins a wheel to receive an assigned first-floor classroom, and gets an initial countdown head start to navigate using hallway signs and architectural landmarks. When the timer reaches zero, a dangerous indoor sun expands from the Commons through the corridors. Checking the assigned classroom door while alive wins the round; losing all health loses. Stepping into shade stops damage accumulation while the sun continues spreading, and checking wrong doors reveals their actual room numbers to assist navigation.
 
-### Status and how to read this document
+The hall is an existing Unreal project, not a model we need to rebuild. Our work makes the environment playable and adds the Commons spawn, room wheel, countdown, corridor hazard, shelter, navigation cues, HUD, and round lifecycle.
 
-- **Implemented in this repository:** this README only. No playable sun encounter, Unreal source, or building assets have been committed here.
-- **Verified from the supplied archive:** the project structure and configuration in [Existing digital twin](#existing-digital-twin).
-- **Agreed design baseline:** the concept and gameplay rules below. These describe intended behavior, not working code.
-- **Proposed implementation:** the Unreal architecture, interfaces, and development sequence. Agents should inspect the actual project before applying them.
-- **Open decisions:** listed explicitly near the end. Do not silently turn them into new requirements.
+### Status and design reference
 
-## Gameplay baseline
+- **Authoritative gameplay design:** Intended gameplay rules, phased timing, and loop architecture are documented in **[docs/gameplay-design.md](docs/gameplay-design.md)** (tracked under [Issue #18](https://github.com/Sweet-Rice/shepfinalproj/issues/18)). Refer to that document for design specifications.
+- **Documentation-only repository:** This repository currently contains design documentation only. No playable sun encounter, Unreal source code, or building assets have been committed here.
+- **Build and implementation status:** Current build behavior and in-editor features remain unverified until supported by hands-on testing and shareable evidence (revision tracking, gameplay clips, screenshots) under [Issue #17](https://github.com/Sweet-Rice/shepfinalproj/issues/17), not inferences from closed tickets.
+- **Unverified architecture and Blueprint names:** All component and class names mentioned in this README (such as `BP_SunEscapeGameMode`, `BP_IndoorSun`, `BP_ClassroomGoal`, `WBP_SunEscapeHUD`) are proposed conceptual abstractions, not confirmed assets in the digital twin project.
+- **Verified digital twin baseline:** Archive metadata and configuration verified from `PFTDigitalTwin.zip` are preserved below in [Existing digital twin](#existing-digital-twin).
 
-1. Assign an eligible classroom at round start.
-2. Show a persistent objective: **"Find Room {RoomId} before the sun kills you."**
-3. While the round is active, check whether the player has reached that classroom.
-4. Otherwise, check whether building geometry blocks the path between the sun and player.
-5. Unobstructed exposure causes damage; closer exposure causes more damage.
-6. Walls provide cover. The baseline has no passive damage through blocking walls.
-7. Reaching the assigned classroom wins immediately. Entering another classroom does not.
-8. Zero health loses the round.
-9. **Within an encounter update, classroom success is checked before damage.** Reaching safety and taking a potentially lethal hit in that update must resolve as a win.
-10. Damage is time-based, not frame-count-based.
+## Core gameplay rules and invariants
 
-This is a gameplay approximation, not a physically accurate simulation of a star inside a building. Looking away from the sun does not provide cover: exposure is a world-space obstruction check, not a camera visibility check.
+The authoritative gameplay loop is specified in [docs/gameplay-design.md](docs/gameplay-design.md). Key invariants and lifecycle rules include:
+
+1. **Commons Spawn & Grounded Navigation:** The player spawns grounded just inside a Commons exterior door leading outside. Routes are designed for standard walking pace without jumping ([#30](https://github.com/Sweet-Rice/shepfinalproj/issues/30)).
+2. **Wheel Selection & Handoff:** The room wheel selects one eligible first-floor classroom. When the wheel settles, movement unlocks, the initial countdown starts, and the assigned room remains persistent on the HUD ([#29](https://github.com/Sweet-Rice/shepfinalproj/issues/29)).
+3. **Head Start Protection:** The initial countdown allows safe navigation and sign-reading. **No hazard damage occurs during the head start.** Initial timing and tuning targets are in the design reference.
+4. **Hazard Expansion:** At countdown zero, the sun begins expanding from the Commons through corridors (targeting ~60 seconds total from wheel handoff to reach most exposed corridors; [#31](https://github.com/Sweet-Rice/shepfinalproj/issues/31)). The ~60-second value is a pacing benchmark, not an automatic defeat timer or an immunity window.
+5. **Shade & Shelter:** Stepping into shade immediately stops damage accumulation while the sun continues spreading.
+6. **Wayfinding Feedback:** Checking a wrong door displays its actual room number and leaves the objective unchanged. The countdown and hazard continue; checking a wrong door does not pause the run.
+7. **Late Victory:** Checking the correct classroom door while alive wins the round immediately (`Won`), even after the countdown has reached zero.
+8. **Same-Update Success Ordering:** A valid target-door check by a living player resolves before potentially lethal hazard damage in that update ([#25](https://github.com/Sweet-Rice/shepfinalproj/issues/25)). An already-lost run cannot win afterward.
+9. **Single Damage Owner & Time-Based Application:** Apply damage using elapsed time and one gameplay owner; the proposed owner is the game mode. Clamp health to `[0, MaxHealth]`.
+10. **Terminal Transitions & Round Reset:** `Won` and `Lost` (at zero health) are terminal states with no resurrection. On defeat, the player may choose **Retry** (resets spawn, health, timer, hazard spread, and HUD with the same assigned classroom) or **Spin Again** (starts a fresh round with a new room wheel selection).
 
 ## Existing digital twin
 
@@ -83,192 +85,69 @@ The building's geometry, classroom labels, collision, lighting, performance, and
 
 **First editor check:** locate a usable starting area and classroom, verify walking-scale dimensions, floors, walls, doors, stairs, and a safe player spawn. A visually correct twin is not automatically a playable level.
 
-## Proposed Unreal architecture
+## Architecture and integration guidance
 
-Use **Blueprint-first gameplay on top of the existing C++ project**. New C++ is appropriate only where it is actually needed. These are proposed names, not files that already exist.
+Implementation should follow Blueprint-first gameplay built on top of the existing C++ project. The names below are **unverified conceptual proposals** to establish clear separation of responsibilities, not existing assets:
 
-Prefer one new gameplay folder such as `/Game/SunEscape/`, with `Blueprints`, `UI`, and `Maps` subfolders. Keep the original hall and original gameplay available. Inspect the current game mode, player controller, pawn, game instance, and room data before replacing or duplicating their responsibilities.
-
-| Component | Proposed responsibility |
+| Proposed component | Proposed responsibility |
 | --- | --- |
-| `BP_SunEscapeGameMode` | Own round state, target classroom, health, round setup, encounter updates, and terminal transitions. Preserve or derive from existing game-mode behavior where necessary. |
-| Existing playable pawn, or `BP_SunEscapeCharacter` if needed | Movement, collision, input, and a defined exposure sample point. No independent damage loop. |
-| `BP_IndoorSun` | Sun visuals and the world-space exposure origin. Start with a designer-placed position; movement is an open design decision. |
-| `BP_ClassroomGoal` | A designer-placed room volume with a unique `RoomId` and eligibility setting; supports an explicit containment check for the player. |
-| `WBP_SunEscapeHUD` | Persistent target-room text, health display, and win/loss presentation. Reads gameplay state; does not decide outcomes. |
+| `BP_SunEscapeGameMode` *(proposed)* | Own round state (`Inactive`, `Active`, `Won`, `Lost`), assigned room, countdown timer, hazard expansion trigger, health, and terminal transitions. |
+| Existing player pawn or `BP_SunEscapeCharacter` *(proposed)* | Player locomotion, collision, camera, and exposure sample point. No independent damage timer. |
+| `BP_IndoorSun` *(proposed)* | Visual hazard front in Commons and corridors; exposure/hazard origin. |
+| `BP_ClassroomGoal` / Door Actor *(proposed)* | Room identification, eligibility, wrong-door feedback trigger, and target arrival detection. |
+| `WBP_SunEscapeHUD` *(proposed)* | Persistent target room number, countdown timer, health display, wrong-room notifications, and win/loss presentation. Reads state; does not resolve outcomes. |
 
-Use a dedicated test map or a controlled map/game-mode override to integrate the encounter. Do not overwrite the original default mode, game instance, or hall content just to get an initial demonstration working.
+### Architectural invariants
 
-### State and interface contract
+- **One active update source, one damage owner, one terminal transition:** The game mode alone manages round transitions and applies damage. Do not create competing damage loops in pawns, hazard volumes, or UI widgets.
+- **Terminal outcomes within a run:** The proposed states are `Inactive`, `Active`, `Won`, and `Lost`; late overlap or trace callbacks cannot reverse a result. Only an explicit retry or spin-again action starts a fresh lifecycle.
+- **Decoupled presentation:** The HUD reflects game state; it never adjudicates win/loss conditions or timers.
 
-The initial proposal is a **single-player** encounter. Multiplayer, replication, and multiple simultaneous players are not assumed.
+### Phased integration sequence
 
-| Field | Owner | Contract |
-| --- | --- | --- |
-| `RoundState` | Game mode | Enum: `Inactive`, `Active`, `Won`, `Lost`. |
-| `TargetClassroom` | Game mode | Reference to one eligible `BP_ClassroomGoal`; its `RoomId` supplies the objective text. |
-| `Player` | Game mode | The controlled player pawn/character used for both containment and exposure checks. |
-| `Sun` | Game mode | Reference to the encounter's `BP_IndoorSun`. |
-| `Health`, `MaxHealth` | Game mode | Health stays in `[0, MaxHealth]`; damage has one owner. |
-| Damage tuning | Game mode | Designer-editable near/far distances and near/far damage rates, with documented Unreal units. |
-| `RoomId`, `Eligible` | Classroom goal | Human-readable room identifier and whether the room may be assigned. |
+To manage scope and allow incremental verification, integration proceeds in three milestones (see [docs/gameplay-design.md](docs/gameplay-design.md)):
 
-Proposed function boundaries:
-
-- `SetupRound()`: initialize the round, choose/store the target, initialize the HUD, then activate the encounter.
-- `UpdateSunEncounter(DeltaSeconds)`: perform the ordered success, exposure, damage, and failure checks.
-- `ContainsPlayer(Player)`: answer whether the player's agreed reference point is inside the target room volume.
-- `FinishRound(Result)`: transition once to `Won` or `Lost`, stop encounter damage, and update the HUD.
-
-**One active update source, one damage owner, one terminal transition.** Do not implement a second damage timer on the sun, player, or HUD.
-
-The game mode must not enter `Active` without a valid player, sun, target, and positive `MaxHealth`. If setup is invalid, keep it inactive and expose the actual setup problem rather than silently starting an unwinnable round.
-
-## Function 1: round setup
-
-This runs **once at round start**, not every frame. Choosing and displaying the target belongs here; the encounter loop only checks the assigned target.
-
-Before activation, initialize health to `MaxHealth` and select from an explicitly configured list of eligible classroom goals. Initially, designers should verify those rooms are reachable; automatic reachability discovery is not required. Do not assign the room the player already occupies at spawn.
-
-```mermaid
-flowchart TD
-    A([Start: SetupRound]) --> B[Keep round Inactive and initialize health]
-    B --> C{Player, sun, health settings,<br/>and eligible rooms valid?}
-    C -- No --> D[Expose setup problem; remain Inactive]
-    D --> Z([Return])
-    C -- Yes --> E[Choose an eligible classroom<br/>not already occupied at spawn]
-    E --> F[Store TargetClassroom]
-    F --> G[Show persistent objective:<br/>Find Room RoomId before the sun kills you]
-    G --> H[Set RoundState to Active]
-    H --> Z
-```
-
-The HUD remains visible during play. It should not recreate the objective widget or reselect the classroom on each update. The initial selection policy—random versus a fixed designer choice—is still open.
-
-## Function 2: sun encounter update
-
-For the first implementation, use one gameplay update driven by Unreal's frame delta. If this is later moved to a timer, use the actual elapsed interval and retain the same ordering.
-
-```mermaid
-flowchart TD
-    A([Start: UpdateSunEncounter]) --> B{RoundState is Active?}
-    B -- No --> Z([Return])
-    B -- Yes --> C{Player inside<br/>TargetClassroom?}
-    C -- Yes --> D[FinishRound: Won]
-    D --> Z
-    C -- No --> E{Path from sun to player<br/>is unobstructed?}
-    E -- No: cover --> Z
-    E -- Yes --> F[Measure distance to sun]
-    F --> G[Calculate distance-based<br/>damage per second]
-    G --> H[Health = clamp Health minus<br/>damage per second times DeltaSeconds]
-    H --> I{Health is zero?}
-    I -- No --> Z
-    I -- Yes --> J[FinishRound: Lost]
-    J --> Z
-```
-
-### Room detection and update ordering
-
-- Give each eligible room a correctly sized, unique goal volume. Do not infer classroom identity from arbitrary mesh names.
-- Define containment consistently. Proposed baseline: the player's actor location is inside the configured room box; whole-body entry is not required.
-- Use overlap events for auxiliary notifications if useful, but evaluate current target containment before applying damage. Do not rely on two unrelated overlap/damage callbacks happening in a favorable order.
-- Schedule the encounter evaluation after player movement so it uses the updated position. Verify tick ordering in the actual pawn/movement implementation.
-- `Won` and `Lost` are terminal until an explicit new round. Later damage or overlap callbacks must not reverse the outcome.
-
-### Exposure and damage
-
-- Proposed baseline: a **single line trace** between a defined sun origin and a stable point on the player, such as torso height.
-- Configure a dedicated trace channel such as `SunExposure`, or an explicitly verified existing channel. Walls, floors, and other intended cover must block it.
-- Ignore the player's own collision and the sun's decorative mesh for this query. Visual brightness or camera-facing direction is not the damage test.
-- First establish that opaque walls stop damage. Glass, doors, railings, and small props need deliberate collision/cover decisions.
-- A single sample point creates predictable but coarse cover behavior. Partial-body exposure or multiple samples are not required by the baseline.
-- Proposed simple tuning model: interpolate linearly from a near damage rate to a far damage rate between near/far distances, clamping outside that interval. Near damage must be greater than far damage, distances must be ordered, and rates must be nonnegative.
-- Use Unreal world units consistently; standard Unreal distances are centimeters. Do not mix room dimensions in meters with raw trace distances.
-- Apply `DamagePerSecond * DeltaSeconds` and clamp health to `[0, MaxHealth]`. Keep the constants designer-editable; their final values are not decided.
-- No healing, heat meter, damage-through-walls, finite damage cutoff, or escalating difficulty is part of the current baseline.
-
-## Implementation sequence and acceptance gates
-
-These are steps toward the full game, not separate claims that the project is already working.
-
-### 1. Establish the runnable baseline
-
-- Extract and open the matching project; resolve real build/plugin issues.
-- Walk through the hall and record collision, scale, spawn, and performance problems.
-- Inspect existing room/area-trigger data and player controls for reusable behavior.
-- **Gate:** Play In Editor loads the actual hall and the player can reach at least one verified classroom without falling through geometry.
-
-### 2. Add classroom objectives and round setup
-
-- Establish the dedicated gameplay mode and a small, designer-verified set of goal volumes.
-- Implement `SetupRound`, target storage, health initialization, and the persistent objective HUD.
-- **Gate:** the displayed room ID matches the stored target; the target is reachable and not the spawn room; entering another room does not win.
-
-### 3. Add the sun and survival rules
-
-- Add visible sun geometry/effects separately from damage logic.
-- Implement the exposure trace, distance-based damage, health UI, and `FinishRound`.
-- **Gate:** clear exposure damages, cover prevents damage, closer exposure is more dangerous, the target wins, and zero health loses.
-
-### 4. Validate the complete lifecycle
-
-- Verify movement/update ordering and success-before-damage behavior.
-- Define and implement an explicit restart/new-round action, resetting health, target, HUD, and active update state without duplicate widgets or damage loops.
-- Expand the eligible room list only after verifying routes and room volumes.
-- Profile the actual hall on the team's hardware before making broad rendering or asset changes.
-- **Gate:** a new round works after either terminal outcome, and the full agreed encounter works in the real building.
-
-### 5. Package and share
-
-- Build a runnable Windows package using the agreed engine version and distribution method.
-- Verify the hall, required plugins, assets, input, HUD, win/loss, and new-round behavior in the packaged build—not only in the editor.
-- Record launch instructions and remaining known issues here.
-- Packaging does not imply permission to redistribute the building; resolve asset permissions before public distribution.
+1. **Mechanical Prototype:** Sandbox map validating the wheel handoff, countdown, damage application, and shade relief.
+2. **First PFT Route:** Grounded Commons exterior-door spawn and one audited walking route to a verified first-floor classroom with cover in PFT ([#30](https://github.com/Sweet-Rice/shepfinalproj/issues/30), [#31](https://github.com/Sweet-Rice/shepfinalproj/issues/31)).
+3. **Route Expansion:** Two additional verified first-floor classrooms added to the wheel for playtesting.
 
 ## Verification checklist
 
-Agents must record what they actually exercised, including the engine version and relevant map. Do not claim a feature is complete because a Blueprint compiles or a source file exists.
+Verification requires evidence from in-editor or packaged gameplay tests (tracked under [#17](https://github.com/Sweet-Rice/shepfinalproj/issues/17) and [#25](https://github.com/Sweet-Rice/shepfinalproj/issues/25)). Do not mark items complete without recorded test results.
 
-| Scenario | Expected result |
-| --- | --- |
-| Begin a valid round | Full health, one assigned classroom, one visible objective, `Active` state. |
-| No eligible target or missing required reference | Round remains `Inactive`; setup problem is visible to the developer. |
-| Enter a non-target classroom | No victory. |
-| Enter the target classroom | One victory transition; encounter damage stops. |
-| Enter target with health low enough for the next hit to be lethal | Victory takes precedence over that update's damage. |
-| Remain exposed at a fixed distance | Health decreases according to elapsed time. |
-| Compare near and far unobstructed exposure | Near exposure causes a greater damage rate. |
-| Stand behind a blocking wall | No exposure damage. |
-| Look away while unobstructed | Exposure still causes damage. |
-| Compare exposure at different frame rates for equal elapsed time | Approximately equal health loss, allowing for frame-boundary sampling. |
-| Reach zero health outside the target | One defeat transition; health does not become negative. |
-| Continue receiving callbacks after victory/defeat | Outcome stays unchanged; damage remains stopped. |
-| Start another round after either outcome | Clean health/objective/state; no duplicate update sources or HUD widgets. |
-| Run the packaged build | Required map/assets/plugins load and the same rules hold. |
-
-Use actual in-editor and packaged gameplay for smoke verification. Add automated tests where they protect real state transitions or boundary behavior, not merely to assert that named components exist.
+| Scenario | Expected result | Status |
+| --- | --- | --- |
+| Wheel handoff | At the Commons spawn, the wheel settles on one eligible room; the objective, movement, and configured countdown start together exactly once. | Unverified |
+| Head start navigation | Player navigates during initial countdown; **zero hazard damage** occurs while countdown > 0. | Unverified |
+| Hazard expansion at zero | At countdown 0, sun expands from Commons through corridors; unshaded player caught by front takes damage over time. | Unverified |
+| Corridor reach pacing | Expanding hazard reaches most exposed corridors at ~60 s total from wheel handoff. | Unverified |
+| Shade protection | Stepping into covered/shaded area stops damage accumulation while hazard continues spreading. | Unverified |
+| Inspect wrong door | Interacting with or checking a non-target door displays its actual room number on HUD without failing or ending the round. | Unverified |
+| Inspect target door (late win) | Checking the correct classroom door while alive transitions to `Won` immediately, even after countdown zero. | Unverified |
+| Same-update target check & damage | A living player's valid target-door check wins before potentially lethal damage in that update. Mere room entry is not an agreed replacement for checking the door. | Unverified |
+| Deplete health to zero | Health clamped to 0; transition to `Lost`; encounter updates and damage stop. | Unverified |
+| Same-room retry | Defeat menu "Retry" cleanly resets player to Commons spawn, restores full health, resets timer and hazard, and keeps the same target classroom. | Unverified |
+| Spin again | Defeat menu "Spin Again" starts a fresh round, resetting state and spinning the wheel for a room assignment. | Unverified |
+| Packaged build validation | Packaged Windows executable loads map, plugins, assets, UI, and executes the lifecycle identically to PIE. | Unverified |
 
 ## Handoff rules for group members and their agents
 
-1. **Inspect before editing.** This repo currently documents a separate archive. Locate the actual Unreal checkout, read its instructions, and inspect its current changes before assuming source paths or assets exist here.
-2. **Preserve the twin.** Do not delete original missions, change the global game instance, strip plugin dependencies, or mass-resave the hall as incidental cleanup.
-3. **Agree on contracts before splitting work.** Use the ownership/state/function contracts above, or record a deliberate revision before dependent agents implement different versions.
-4. **Keep one owner per binary asset.** Coordinate changes to maps, Blueprints, widgets, and other `.uasset` files; Git cannot normally text-merge simultaneous edits to them.
-5. **Split independent work only after interfaces are stable.** Reasonable assignments are encounter state/damage; classroom volumes/data; sun visuals/exposure setup; and HUD/input integration.
-6. **Do not duplicate existing systems by assumption.** Inspect the room-search, trigger, pawn, and controller implementations before deciding whether to reuse them.
-7. **Keep changes scoped.** No networking, procedural building generation, real stellar physics, or replacement of the digital-twin architecture unless the team explicitly adds that scope.
-8. **Report evidence.** Handoffs should name changed files/assets, state which scenarios were exercised, and identify blockers or assumptions. Unverified behavior must remain labeled.
-9. **Update this README as reality changes.** Keep planned versus implemented behavior accurate; record confirmed setup instructions and any agreed design changes.
+1. **Inspect before editing.** This repository currently documents an external project archive. Verify files and check out actual assets before assuming source paths or assets exist.
+2. **Preserve the twin.** Do not delete original missions, alter the global game instance, strip plugin dependencies, or resave the hall as incidental cleanup.
+3. **Agree on contracts before splitting work.** Maintain the lifecycle, state ownership, and interface contracts documented in [docs/gameplay-design.md](docs/gameplay-design.md).
+4. **Keep one owner per binary asset.** Coordinate changes to maps, Blueprints, widgets, and other `.uasset` files; Git cannot merge simultaneous binary edits.
+5. **Separate independent work packages.** Reasonable split: wheel/round lifecycle, corridor hazard/shade mechanics, room/door identification, and HUD.
+6. **Do not duplicate existing systems by assumption.** Inspect existing twin components (tour, room-search, area-triggers, pawn) before creating redundant implementations.
+7. **Keep changes scoped.** No networking, procedural generation, or real stellar physics unless explicitly authorized.
+8. **Report verifiable evidence.** Handoffs must cite tested build revisions, attach gameplay clips or screenshots, and record exercised scenarios under [#17](https://github.com/Sweet-Rice/shepfinalproj/issues/17).
+9. **Keep documentation aligned.** Update documentation when design decisions are agreed upon or setup instructions change.
 
 ## Open decisions
 
-- Exact indoor sun position, visible size, and whether it remains stationary or moves.
-- Eligible room list, selection policy, spawn location, and accessibility of routes.
-- Near/far damage distances and rates, maximum health, and intended difficulty.
-- Whether glass, closed/open doors, and small props provide cover.
-- Whether a timer, room hints, audio cues, or additional navigation aids are desired.
-- Final input scheme, win/loss presentation, and restart interaction.
-- Asset permissions, versioning/distribution method, repository layout, and build-sharing process.
-- Performance target and supported hardware.
+The following questions remain open for team decision (see [docs/gameplay-design.md](docs/gameplay-design.md) and [Issue #18](https://github.com/Sweet-Rice/shepfinalproj/issues/18)):
 
-Until these are resolved, prefer the smallest implementation of the agreed loop: **one player, one sun, an assigned classroom, persistent instructions, cover-aware distance damage, and explicit win/loss states**.
+- **Earlier damage model:** Decide whether to retain, adapt, or replace distance-based rates once the expanding front reaches the player. A clear line to the sun alone must not bypass the head start or damage players ahead of the front.
+- **Cover and occlusion geometry:** Shade must stop damage while spread continues. Confirm how the front follows corridors and turns, how shade is detected, and which doors, glass, and small props provide cover; do not assume a single trace to the sun models the front.
+- **Classroom arrival detection:** The intended player action is checking the correct door. Confirm input, range, and how door queries or existing volumes support that action; automatic victory on overlap is not yet agreed.
+- **Tuning and pacing constants:** Finalizing damage per second, player walk speed, hazard spread rate, and the roster of eligible first-floor classrooms based on route walk times.
+- **Project asset distribution & versioning:** Establishing Git LFS, Perforce, or external package hosting for binary Unreal assets.
