@@ -246,6 +246,8 @@ Agents must record what they actually exercised, including the engine version an
 | Start another round after either outcome | Clean health/objective/state; no duplicate update sources or HUD widgets. |
 | Run the packaged build | Required map/assets/plugins load and the same rules hold. |
 
+Step-by-step round lifecycle cases with a results log live in [docs/qa/round-cases.md](docs/qa/round-cases.md).
+
 Use actual in-editor and packaged gameplay for smoke verification. Add automated tests where they protect real state transitions or boundary behavior, not merely to assert that named components exist.
 
 ## Handoff rules for group members and their agents
