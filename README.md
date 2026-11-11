@@ -16,7 +16,7 @@ The hall is an existing Unreal project, not a model we need to rebuild. Our work
 
 - **Authoritative gameplay design:** Intended gameplay rules, phased timing, and loop architecture are documented in **[docs/gameplay-design.md](docs/gameplay-design.md)** (tracked under [Issue #18](https://github.com/Sweet-Rice/shepfinalproj/issues/18)). Refer to that document for design specifications.
 - **Repository contents:** Design and playtest documentation, plus a [standalone browser room wheel](prototypes/room-wheel/README.md). The playable encounter, Unreal source, and building assets are tracked through the team's build handoff.
-- **Build and implementation status:** Current build behavior and in-editor features remain unverified until supported by hands-on testing and shareable evidence (revision tracking, gameplay clips, screenshots) under [Issue #17](https://github.com/Sweet-Rice/shepfinalproj/issues/17), not inferences from closed tickets.
+- **Build and implementation status:** See the [build handoff](docs/implementation-status.md) for browser and walkthrough evidence, the current limits of verification, and what the gameplay build owner needs to provide.
 - **Unverified architecture and Blueprint names:** All component and class names mentioned in this README (such as `BP_SunEscapeGameMode`, `BP_IndoorSun`, `BP_ClassroomGoal`, `WBP_SunEscapeHUD`) are proposed conceptual abstractions, not confirmed assets in the digital twin project.
 - **Verified digital twin baseline:** Archive metadata and configuration verified from `PFTDigitalTwin.zip` are preserved below in [Existing digital twin](#existing-digital-twin).
 
@@ -88,6 +88,8 @@ Playtesters using a shared package can follow the [player quickstart](docs/playe
 **First editor check:** locate a usable starting area and classroom, verify walking-scale dimensions, floors, walls, doors, stairs, and a safe player spawn. A visually correct twin is not automatically a playable level.
 
 ## Architecture and integration guidance
+
+The [Commons route worksheet](docs/commons-route.md) identifies a door to inspect and nearby classrooms to check. The [candidate roster](data/classroom-candidates.csv) keeps those rooms out of the wheel until their routes are verified.
 
 Implementation should follow Blueprint-first gameplay built on top of the existing C++ project. The names below are **unverified conceptual proposals** to establish clear separation of responsibilities, not existing assets:
 
