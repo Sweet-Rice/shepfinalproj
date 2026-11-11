@@ -1,0 +1,37 @@
+spread_model,head_start_s,sun_front_speed_mps,checkpoint_id,checkpoint_name,player_route_m,sun_path_m,player_arrival_s,sun_arrival_s,gap_s,status,walking_pace_mps,source_type,travel_time_source
+fixed_60s_target,20,2.75,CP0,Spawn inside Commons exterior door,0,10,0.0,23.6,23.6,ahead,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_60s_target,20,2.75,CP1,Commons exit into main corridor (turn 1),25,35,18.7,32.7,14.1,ahead,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_60s_target,20,2.75,CP2,Main corridor midpoint (exposed),55,65,43.0,43.6,0.6,ahead,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_60s_target,20,2.75,CP3,Corridor junction (turn 2),80,90,61.7,52.7,-9.0,caught,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_60s_target,20,2.75,CP4,Side corridor end (last exposed corridor),100,110,79.6,60.0,-19.6,caught,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_60s_target,20,2.75,CP5,Destination classroom door,115,125,90.8,65.5,-25.4,caught,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_60s_target,25,3.14,CP0,Spawn inside Commons exterior door,0,10,0.0,28.2,28.2,ahead,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_60s_target,25,3.14,CP1,Commons exit into main corridor (turn 1),25,35,18.7,36.1,17.5,ahead,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_60s_target,25,3.14,CP2,Main corridor midpoint (exposed),55,65,43.0,45.7,2.6,ahead,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_60s_target,25,3.14,CP3,Corridor junction (turn 2),80,90,61.7,53.6,-8.1,caught,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_60s_target,25,3.14,CP4,Side corridor end (last exposed corridor),100,110,79.6,60.0,-19.6,caught,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_60s_target,25,3.14,CP5,Destination classroom door,115,125,90.8,64.8,-26.0,caught,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_60s_target,30,3.67,CP0,Spawn inside Commons exterior door,0,10,0.0,32.7,32.7,ahead,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_60s_target,30,3.67,CP1,Commons exit into main corridor (turn 1),25,35,18.7,39.5,20.9,ahead,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_60s_target,30,3.67,CP2,Main corridor midpoint (exposed),55,65,43.0,47.7,4.7,ahead,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_60s_target,30,3.67,CP3,Corridor junction (turn 2),80,90,61.7,54.5,-7.2,caught,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_60s_target,30,3.67,CP4,Side corridor end (last exposed corridor),100,110,79.6,60.0,-19.6,caught,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_60s_target,30,3.67,CP5,Destination classroom door,115,125,90.8,64.1,-26.7,caught,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_speed,20,3.14,CP0,Spawn inside Commons exterior door,0,10,0.0,23.2,23.2,ahead,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_speed,20,3.14,CP1,Commons exit into main corridor (turn 1),25,35,18.7,31.1,12.5,ahead,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_speed,20,3.14,CP2,Main corridor midpoint (exposed),55,65,43.0,40.7,-2.4,caught,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_speed,20,3.14,CP3,Corridor junction (turn 2),80,90,61.7,48.6,-13.1,caught,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_speed,20,3.14,CP4,Side corridor end (last exposed corridor),100,110,79.6,55.0,-24.6,caught,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_speed,20,3.14,CP5,Destination classroom door,115,125,90.8,59.8,-31.0,caught,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_speed,25,3.14,CP0,Spawn inside Commons exterior door,0,10,0.0,28.2,28.2,ahead,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_speed,25,3.14,CP1,Commons exit into main corridor (turn 1),25,35,18.7,36.1,17.5,ahead,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_speed,25,3.14,CP2,Main corridor midpoint (exposed),55,65,43.0,45.7,2.6,ahead,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_speed,25,3.14,CP3,Corridor junction (turn 2),80,90,61.7,53.6,-8.1,caught,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_speed,25,3.14,CP4,Side corridor end (last exposed corridor),100,110,79.6,60.0,-19.6,caught,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_speed,25,3.14,CP5,Destination classroom door,115,125,90.8,64.8,-26.0,caught,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_speed,30,3.14,CP0,Spawn inside Commons exterior door,0,10,0.0,33.2,33.2,ahead,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_speed,30,3.14,CP1,Commons exit into main corridor (turn 1),25,35,18.7,41.1,22.5,ahead,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_speed,30,3.14,CP2,Main corridor midpoint (exposed),55,65,43.0,50.7,7.6,ahead,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_speed,30,3.14,CP3,Corridor junction (turn 2),80,90,61.7,58.6,-3.1,caught,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_speed,30,3.14,CP4,Side corridor end (last exposed corridor),100,110,79.6,65.0,-14.6,caught,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter
+fixed_speed,30,3.14,CP5,Destination classroom door,115,125,90.8,69.8,-21.0,caught,1.34,estimate,Guess; replace with #19 survey / walking_pace parameter

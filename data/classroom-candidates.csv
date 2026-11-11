@@ -1,0 +1,4 @@
+room_id,display_room,floor,source,route_status,wheel_eligible,landmark_clue
+pft-1225,1225,1,LSU first-floor guide and registrar,needs_route_and_sign_check,false,
+pft-1221,1221,1,LSU first-floor guide and registrar,needs_route_and_sign_check,false,
+pft-1360,1360,1,LSU first-floor guide,needs_route_and_sign_check,false,
