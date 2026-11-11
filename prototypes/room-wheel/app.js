@@ -228,6 +228,7 @@
     clearTimers();
     var p = state.pending;
     setRotation(p.endRotation, false);
+    var skipWasFocused = document.activeElement === skipNowBtn;
     skipNowBtn.hidden = true;
     wrap.classList.remove("spinning");
 
@@ -263,6 +264,7 @@
     startCountdown(seconds);
     spinBtn.disabled = false;
     spinBtn.textContent = "Spin again";
+    if (skipWasFocused) spinBtn.focus();
   }
 
   function startCountdown(seconds) {
@@ -277,8 +279,8 @@
       bar.style.transform = "scaleX(" + left / seconds + ")";
       if (left <= 0) {
         state.phase = "sunActive";
-        msg.innerHTML = '<span class="sun-up">☀️ The sun is up — exposure damage is now active!</span>';
-        announce("The sun is up.");
+        msg.innerHTML = '<span class="sun-up">☀️ The sun is expanding. Find your room and take shade if it reaches you.</span>';
+        announce("The sun is expanding.");
         emit("roomwheel:sunActive", {});
         return;
       }
