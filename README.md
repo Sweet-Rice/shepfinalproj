@@ -15,8 +15,8 @@ The hall is an existing Unreal project, not a model we need to rebuild. Our work
 ### Status and design reference
 
 - **Authoritative gameplay design:** Intended gameplay rules, phased timing, and loop architecture are documented in **[docs/gameplay-design.md](docs/gameplay-design.md)** (tracked under [Issue #18](https://github.com/Sweet-Rice/shepfinalproj/issues/18)). Refer to that document for design specifications.
-- **Repository contents:** Design and playtest documentation, plus a [standalone browser room wheel](prototypes/room-wheel/README.md). The playable encounter, Unreal source, and building assets are tracked through the team's build handoff.
-- **Build and implementation status:** See the [build handoff](docs/implementation-status.md) for browser and walkthrough evidence, the current limits of verification, and what the gameplay build owner needs to provide.
+- **Repository contents:** The [Unreal game project and test runner](unreal/README.md), design and playtest documentation, and a [standalone browser room wheel](prototypes/room-wheel/README.md). The Unreal project uses the team's separately shared walkthrough assets.
+- **Build and implementation status:** See the [build handoff](docs/implementation-status.md) for what works in Unreal, test evidence, and remaining playtest work.
 - **Unverified architecture and Blueprint names:** All component and class names mentioned in this README (such as `BP_SunEscapeGameMode`, `BP_IndoorSun`, `BP_ClassroomGoal`, `WBP_SunEscapeHUD`) are proposed conceptual abstractions, not confirmed assets in the digital twin project.
 - **Verified digital twin baseline:** Archive metadata and configuration verified from `PFTDigitalTwin.zip` are preserved below in [Existing digital twin](#existing-digital-twin).
 
@@ -66,6 +66,10 @@ The building's geometry, classroom labels, collision, lighting, performance, and
 - Decide the shared project/asset distribution method before multiple agents begin implementation. If assets will be versioned here, agree on Git LFS and Unreal asset handling first; this README does not establish that policy.
 
 ## Local setup
+
+Follow the [Sun Run Unreal setup](unreal/README.md) to build, test, or play the game using the curated walkthrough. The archive instructions below are for inspecting the original digital twin.
+
+### Original archive setup
 
 1. Obtain the supplied archive from the team's agreed location. It is not included in this repository.
 2. Use **Unreal Engine 5.8.2** if available, matching the included build. Confirm the team's exact version before converting or saving the project in another engine version; changing `EngineAssociation` alone does not make assets or plugins compatible.

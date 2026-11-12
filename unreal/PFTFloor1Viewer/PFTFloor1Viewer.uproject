@@ -1,0 +1,41 @@
+{
+  "FileVersion": 3,
+  "EngineAssociation": "5.8",
+  "Description": "PFT Sun Run, a first-person classroom wayfinding game",
+  "DisableEnginePluginsByDefault": true,
+  "Plugins": [
+    {
+      "Name": "PythonScriptPlugin",
+      "Enabled": true
+    },
+    {
+      "Name": "EditorScriptingUtilities",
+      "Enabled": true
+    },
+    {
+      "Name": "InterchangeEditor",
+      "Enabled": true
+    },
+    {
+      "Name": "DatasmithContent",
+      "Enabled": true
+    },
+    {
+      "Name": "BasicMasterMaterials",
+      "Enabled": true,
+      "Optional": true
+    },
+    {
+      "Name": "DTGenericCatalog",
+      "Enabled": true,
+      "Optional": true
+    }
+  ],
+  "Modules": [
+    {
+      "Name": "PFTFloor1Viewer",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ]
+}
