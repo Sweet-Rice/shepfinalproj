@@ -12,6 +12,8 @@
 #include "Misc/Parse.h"
 #include "ShaderCompiler.h"
 
+#include "PFTFirstFloorSigns.inl"
+
 namespace
 {
     const FVector CommonsStart(15124, -7300, 105);
@@ -193,6 +195,22 @@ APFTSunRunMode::APFTSunRunMode()
     PrimaryActorTick.bCanEverTick = true;
 }
 
+void APFTSunRunMode::BeginPlay()
+{
+    Super::BeginPlay();
+    if (!GetWorld()->GetMapName().EndsWith(TEXT("PFTWalkthrough")))
+    {
+        return;
+    }
+    FActorSpawnParameters Spawn;
+    Spawn.ObjectFlags = RF_Transient;
+    if (AActor* Signage = GetWorld()->SpawnActor<AActor>(Spawn))
+    {
+        RegisteredSignText = RestoreFirstFloorSigns(*Signage);
+    }
+    UE_LOG(LogTemp, Display, TEXT("PFT SUN RUN: restored %d first-floor sign text components"), RegisteredSignText);
+}
+
 void APFTSunRunMode::RestartPlayer(AController* Player)
 {
     RestartPlayerAtTransform(Player, FTransform(CommonsFacing, CommonsStart));
@@ -305,6 +323,12 @@ void APFTSunRunMode::Tick(float DeltaSeconds)
     if (!bVerified && GetWorld()->GetTimeSeconds() >= 1 && FParse::Param(FCommandLine::Get(), TEXT("PFTVerifySunRun")))
     {
         bVerified = true;
+        if (RegisteredSignText != UE_ARRAY_COUNT(FirstFloorSignText))
+        {
+            UE_LOG(LogTemp, Error, TEXT("PFT SUN RUN: failed to register first-floor sign text"));
+            FPlatformMisc::RequestExitWithStatus(false, 1);
+            return;
+        }
         if (!VerifyRound(*Walker) || !StartVerificationWalk(*Walker, 0))
         {
             FPlatformMisc::RequestExitWithStatus(false, 1);
