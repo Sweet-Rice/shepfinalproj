@@ -23,6 +23,8 @@ private:
     void ResetRound(EPFTRoundPhase NextPhase);
     void AdvanceRound(APawn& Pawn, float DeltaSeconds);
     bool VerifyRound(APFTWalker& Walker);
+    bool StartVerificationWalk(APFTWalker& Walker, int32 RoomIndex);
+    bool DriveVerificationWalk(APFTWalker& Walker);
     void SetMovementLocked(APlayerController& Player, bool bLocked) const;
 
     EPFTRoundPhase Phase = EPFTRoundPhase::Wheel;
@@ -35,6 +37,8 @@ private:
     FString DoorFeedback;
     bool bDoorCheckQueued = false;
     bool bVerified = false;
+    TArray<FVector> VerificationPath;
+    int32 VerificationWaypoint = 0;
 };
 
 UCLASS()
@@ -49,6 +53,7 @@ public:
 private:
     void Spin();
     void Retry();
+    void TogglePause();
     void CheckDoor();
 };
 

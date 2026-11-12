@@ -1,5 +1,4 @@
 #include "PFTWalkthrough.h"
-#include "Modules/ModuleManager.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
@@ -14,7 +13,6 @@
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "HAL/PlatformMisc.h"
-IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, PFTFloor1Viewer, "PFTFloor1Viewer");
 
 APFTMeshGroup::APFTMeshGroup() {
  Architecture=CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Architecture"));

@@ -1,5 +1,6 @@
 #include "PFTSunRun.h"
 
+#include "Algo/Reverse.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -9,7 +10,7 @@ namespace
 {
     // Search the loaded map for a continuous floor and standing capsule clearance.
     // Each edge is swept to catch thin walls and closed doors between samples.
-    double WalkableDistance(APFTWalker& Walker, const FVector& Start, const FVector& Goal)
+    double WalkableDistance(APFTWalker& Walker, const FVector& Start, const FVector& Goal, TArray<FVector>* Path = nullptr)
     {
         constexpr int32 Step = 65;
         const FCollisionQueryParams Query(SCENE_QUERY_STAT(PFTSunRunRoute), true, &Walker);
@@ -43,8 +44,9 @@ namespace
             FIntPoint Grid;
             FVector Position;
             double Distance;
+            int32 Parent;
         };
-        TArray<FStep> Queue{{FIntPoint::ZeroValue, StartOnFloor, 0}};
+        TArray<FStep> Queue{{FIntPoint::ZeroValue, StartOnFloor, 0, INDEX_NONE}};
         TSet<FIntPoint> Visited{FIntPoint::ZeroValue};
         const FIntPoint Neighbors[] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
         for (int32 Index = 0; Index < Queue.Num(); ++Index)
@@ -52,6 +54,16 @@ namespace
             const FStep Current = Queue[Index];
             if (FVector::Dist2D(Current.Position, GoalOnFloor) < Step * 1.5 && ClearEdge(Current.Position, GoalOnFloor))
             {
+                if (Path)
+                {
+                    Path->Reset();
+                    Path->Add(GoalOnFloor);
+                    for (int32 Parent = Index; Parent != INDEX_NONE; Parent = Queue[Parent].Parent)
+                    {
+                        Path->Add(Queue[Parent].Position);
+                    }
+                    Algo::Reverse(*Path);
+                }
                 return Current.Distance + FVector::Dist2D(Current.Position, GoalOnFloor);
             }
             for (const FIntPoint& Offset : Neighbors)
@@ -66,7 +78,7 @@ namespace
                 if (FindFloor(XY, Standing) && ClearEdge(Current.Position, Standing))
                 {
                     Visited.Add(Next);
-                    Queue.Add({Next, Standing, Current.Distance + Step});
+                    Queue.Add({Next, Standing, Current.Distance + Step, Index});
                 }
             }
         }
