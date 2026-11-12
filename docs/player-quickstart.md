@@ -1,36 +1,24 @@
-# Player Quickstart Guide
+# PFT Sun Run player quickstart
 
-This guide describes how to run and play a shared build of *What If the Sun Was Inside PFT?* as a playtester or teammate without needing Unreal Engine installed.
+## 1. Launch the Windows playtest
 
-**Draft for shared-build testing:** No packaged build, launch command, input binding, or gameplay behavior has been verified here. Ask the build owner to confirm the handoff details below before testing. Bold action names describe intended actions, not confirmed button labels.
+1. Get the playtest ZIP from your team. In File Explorer, right-click it and choose **Extract All**.
+2. Open the extracted folder and double-click **PFTFloor1Viewer.exe**. Keep the other folders alongside it. The game and PFT map are included.
+3. If Windows reports a missing Microsoft Visual C++ runtime, run **vc_redist.x64.exe** under **Engine\Extras\Redist\en-us**, then try again.
 
-## 1. Obtaining and Launching the Build
+The standalone build runs on 64-bit Windows. Building a new package requires Unreal and the team's walkthrough assets. [Developer packaging instructions](../unreal/README.md)
 
-1. **Obtain the build package:** Request the packaged build archive, revision identifier, and control card directly from the build owner via team channels.
-2. **Extract the package:** Unpack the entire ZIP archive to a local folder (avoid OneDrive or cloud-synced folders). Do not run directly from inside the compressed archive.
-3. **Launch the game:** Run only the confirmed executable file provided by the build owner. You do not need to install Unreal Engine, open its editor, or modify project source to play a packaged build.
+## 2. Controls
 
-### Build Handoff Status
-
-| Property | Status / Confirmed Value | Notes |
-| :--- | :--- | :--- |
-| **Build Revision / Commit** | *Pending build confirmation* | Specified by build owner with shared archive |
-| **Target Platform** | *Pending build confirmation* | Windows 64-bit standalone package planned |
-| **Executable Name** | *Pending build confirmation* | Launch only the binary confirmed by owner |
-| **Control Scheme** | *Pending build confirmation* | Keybindings awaiting input mapping confirmation |
-
-## 2. Controls and Actions
-
-Input keybindings have not been finalized or verified against a packaged build. Do not assume standard keyboard/mouse mappings until confirmed on the build control card.
-
-| Intended Action | Action / Label to Look For (Unconfirmed) | Confirmed Key / Input |
-| :--- | :--- | :--- |
-| Start assignment | Spin Wheel | *Pending build confirmation* |
-| Move character | Movement / Locomotion | *Pending build confirmation* |
-| Look / Aim camera | Camera Look | *Pending build confirmation* |
-| Inspect classroom door | Check Door / Interact | *Pending build confirmation* |
-| Restart same room | Same Room Retry | *Pending build confirmation* |
-| Roll new room target | Spin Again | *Pending build confirmation* |
+| Input | Action |
+| --- | --- |
+| Enter | Spin for a classroom or spin again after the round |
+| WASD / Mouse | Move / look |
+| Shift / Space | Sprint / jump |
+| E | Check the classroom door you are facing |
+| Esc | Pause or resume |
+| R | Retry the same classroom after the round |
+| Alt+F4 | Exit the game |
 
 ## 3. Gameplay Loop and Rules
 
