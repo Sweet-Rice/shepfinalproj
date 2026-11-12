@@ -10,11 +10,12 @@
 #include "InputCoreTypes.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
+#include "ShaderCompiler.h"
 
 namespace
 {
     const FVector CommonsStart(15124, -7300, 105);
-    const FRotator CommonsFacing(0, 130, 0);
+    const FRotator CommonsFacing(0, 105, 0);
     constexpr float HeadStart = 25;
     constexpr float FullSpreadTime = 60;
     constexpr float SpinTime = 1.8f;
@@ -37,6 +38,11 @@ namespace
         {1221, FVector(12216, -6933, 145), FVector(12216, -6800, 100)}
     };
     const FBox2D Shade(FVector2D(13300, -6330), FVector2D(13520, -6120));
+
+    bool IsPreparingMaterials()
+    {
+        return GShaderCompilingManager && GShaderCompilingManager->IsCompiling();
+    }
 
     float SunArrivalTime(const FVector& Position)
     {
@@ -137,7 +143,7 @@ void APFTSunRunMode::Spin()
     {
         ResetRound(EPFTRoundPhase::Wheel);
     }
-    if (Phase == EPFTRoundPhase::Wheel && SpinRemaining <= 0)
+    if (Phase == EPFTRoundPhase::Wheel && SpinRemaining <= 0 && !IsPreparingMaterials())
     {
         AssignedRoom = FMath::RandHelper(UE_ARRAY_COUNT(Rooms));
         SpinRemaining = SpinTime;
@@ -205,7 +211,15 @@ void APFTSunRunMode::Tick(float DeltaSeconds)
     if (!bVerified && GetWorld()->GetTimeSeconds() >= 1 && FParse::Param(FCommandLine::Get(), TEXT("PFTVerifySunRun")))
     {
         bVerified = true;
-        FPlatformMisc::RequestExitWithStatus(false, VerifyRound(*Walker) ? 0 : 1);
+        if (!VerifyRound(*Walker) || !StartVerificationWalk(*Walker, 0))
+        {
+            FPlatformMisc::RequestExitWithStatus(false, 1);
+        }
+        return;
+    }
+
+    if (!VerificationPath.IsEmpty() && !DriveVerificationWalk(*Walker))
+    {
         return;
     }
 
@@ -234,6 +248,7 @@ void APFTSunRunWalker::SetupPlayerInputComponent(UInputComponent* Input)
     Input->BindKey(EKeys::Enter, IE_Pressed, this, &APFTSunRunWalker::Spin);
     Input->BindKey(EKeys::R, IE_Pressed, this, &APFTSunRunWalker::Retry);
     Input->BindKey(EKeys::E, IE_Pressed, this, &APFTSunRunWalker::CheckDoor);
+    Input->BindKey(EKeys::Escape, IE_Pressed, this, &APFTSunRunWalker::TogglePause).bExecuteWhenPaused = true;
 }
 
 bool APFTSunRunWalker::CanJumpInternal_Implementation() const
@@ -254,6 +269,14 @@ void APFTSunRunWalker::Retry()
     if (APFTSunRunMode* Mode = GetWorld()->GetAuthGameMode<APFTSunRunMode>())
     {
         Mode->Retry();
+    }
+}
+
+void APFTSunRunWalker::TogglePause()
+{
+    if (APlayerController* Player = Cast<APlayerController>(Controller))
+    {
+        Player->SetPause(!GetWorld()->IsPaused());
     }
 }
 
@@ -284,12 +307,22 @@ void APFTSunRunHUD::DrawHUD()
     const FLinearColor Red(1.f, .31f, .17f);
     const int32 Room = Rooms[Mode->AssignedRoom].Number;
 
+    if (GetWorld()->IsPaused())
+    {
+        const float Left = Width / 2 - 142;
+        const float Top = Height / 2 - 54;
+        DrawRect(Panel, Left, Top, 284, 108);
+        DrawText(TEXT("Paused"), Ink, Left + 22, Top + 16, GEngine->GetLargeFont(), 1.4f);
+        DrawText(TEXT("Esc   Resume"), Ink, Left + 22, Top + 66, GEngine->GetMediumFont());
+        return;
+    }
+
     if (Mode->Phase == EPFTRoundPhase::Wheel)
     {
         const float Left = Width / 2 - 164;
         const float Top = Height / 2 - 142;
         DrawRect(Panel, Left, Top, 328, 284);
-        DrawText(TEXT("PFT Sun Run"), Ink, Left + 26, Top + 18, GEngine->GetLargeFont(), 1.15f);
+        DrawText(TEXT("PFT Sun Run"), Ink, Left + 26, Top + 18, GEngine->GetLargeFont(), 1.45f);
         const FVector2D Center(Width / 2, Top + 137);
         const float Progress = 1 - Mode->SpinRemaining / SpinTime;
         const float Angle = Mode->SpinRemaining > 0
@@ -308,7 +341,9 @@ void APFTSunRunHUD::DrawHUD()
             DrawText(FString::FromInt(Rooms[Index].Number), Ink, Label.X - 17, Label.Y - 8, GEngine->GetSmallFont(), 1.25f);
         }
         DrawLine(Center.X + 66, Center.Y, Center.X + 78, Center.Y, Gold, 4);
-        DrawText(Mode->SpinRemaining > 0 ? TEXT("Assigning your classroom...") : TEXT("Enter   Spin for your classroom"),
+        const TCHAR* Prompt = IsPreparingMaterials() ? TEXT("Preparing the building materials...")
+            : (Mode->SpinRemaining > 0 ? TEXT("Assigning your classroom...") : TEXT("Enter   Spin for your classroom"));
+        DrawText(Prompt,
             Ink, Left + 26, Top + 225, GEngine->GetMediumFont(), 1.f);
         return;
     }
@@ -322,11 +357,12 @@ void APFTSunRunHUD::DrawHUD()
         DrawRect(FLinearColor(1.f, .28f, .04f, .17f), 0, 0, Width, Height);
     }
     DrawRect(Panel, 22, 22, 284, 110);
-    DrawText(FString::Printf(TEXT("Find room %d"), Room), Ink, 36, 32, GEngine->GetLargeFont(), 1.f);
+    DrawText(FString::Printf(TEXT("Find room %d"), Room), Ink, 36, 32, GEngine->GetLargeFont(), 1.35f);
     FString Status = FString::Printf(TEXT("Sun expands in %ds"), FMath::CeilToInt(HeadStart - Mode->Elapsed));
     if (bExpanding)
     {
-        Status = bShade ? TEXT("In shade") : (bBurning ? TEXT("In sunlight. Find shade.") : TEXT("Sun expanding"));
+        Status = bShade ? TEXT("In shade") : (bBurning ? TEXT("In sunlight. Find shade.")
+            : FString::Printf(TEXT("Sun reaches here in %ds"), FMath::CeilToInt(SunArrivalTime(Position) - Mode->Elapsed)));
     }
     DrawText(Status, bShade && bExpanding ? Aqua : (bBurning ? Red : Gold), 36, 67, GEngine->GetMediumFont(), 1.f);
     DrawRect(FLinearColor(.13f, .17f, .22f), 36, 100, 196, 9);
@@ -381,11 +417,18 @@ void APFTSunRunHUD::DrawHUD()
     {
         DrawText(FString::Printf(TEXT("E   Check room %d"), Door->Number), Ink, Width / 2 - 78, Height / 2 + 22, GEngine->GetMediumFont());
     }
-    DrawRect(Panel, 22, Height - 49, 390, 27);
-    DrawText(TEXT("WASD Move     Shift Sprint     Mouse Look     E Check door"), Ink, 34, Height - 43, GEngine->GetSmallFont());
+    DrawRect(Panel, 22, Height - 49, 435, 27);
+    DrawText(TEXT("WASD Move    Shift Sprint    Mouse Look    E Check door    Esc Pause"), Ink, 34, Height - 43, GEngine->GetSmallFont());
     if (Mode->FeedbackRemaining > 0)
     {
+        DrawRect(Panel, 22, 139, 284, 29);
         DrawText(Mode->DoorFeedback, Ink, 36, 146, GEngine->GetMediumFont());
+    }
+    else if (FVector::DistSquared2D(Position, CommonsStart) < FMath::Square(1000.f))
+    {
+        DrawRect(Panel, 22, 139, 284, 42);
+        DrawText(TEXT("Follow the Commons hall toward the stairs."), Ink, 36, 146, GEngine->GetSmallFont());
+        DrawText(TEXT("Stay on the first floor."), Gold, 36, 163, GEngine->GetSmallFont());
     }
 }
 
@@ -486,4 +529,70 @@ bool APFTSunRunMode::VerifyRound(APFTWalker& Walker)
         bPassed ? TEXT("PASS") : TEXT("FAIL"), bSpawn, bWheelLocked, bHandoff, bHeadStart, bExposure, bAheadOfFront,
         bRoutes, bShade, bLeaveShade, bWrongDoor, bLookAway, bLateWin, bRetry, bLost, bSpinAgain);
     return bPassed;
+}
+
+bool APFTSunRunMode::StartVerificationWalk(APFTWalker& Walker, int32 RoomIndex)
+{
+    VerificationPath.Reset();
+    if (WalkableDistance(Walker, GroundedStart, Rooms[RoomIndex].Approach, &VerificationPath) <= 0)
+    {
+        UE_LOG(LogTemp, Error, TEXT("PFT SUN RUN: no walking path for room %d"), Rooms[RoomIndex].Number);
+        return false;
+    }
+
+    AssignedRoom = RoomIndex;
+    ResetRound(EPFTRoundPhase::Running);
+    VerificationWaypoint = 1;
+    return true;
+}
+
+bool APFTSunRunMode::DriveVerificationWalk(APFTWalker& Walker)
+{
+    const FClassroom& Room = Rooms[AssignedRoom];
+    if (Phase == EPFTRoundPhase::Won)
+    {
+        UE_LOG(LogTemp, Display, TEXT("PFT SUN RUN: walked to room %d in %.1fs (%.0f HP)"), Room.Number, Elapsed, Health);
+        if (AssignedRoom + 1 < UE_ARRAY_COUNT(Rooms))
+        {
+            if (!StartVerificationWalk(Walker, AssignedRoom + 1))
+            {
+                FPlatformMisc::RequestExitWithStatus(false, 1);
+            }
+        }
+        else
+        {
+            VerificationPath.Reset();
+            UE_LOG(LogTemp, Display, TEXT("PFT SUN RUN: PASS both walking routes"));
+            FPlatformMisc::RequestExitWithStatus(false, 0);
+        }
+        return false;
+    }
+
+    const FVector Here = Walker.GetActorLocation();
+    if (Phase != EPFTRoundPhase::Running || Elapsed > FullSpreadTime)
+    {
+        UE_LOG(LogTemp, Error, TEXT("PFT SUN RUN: walk to %d stopped at waypoint %d of %d, %s, %.1fs"),
+            Room.Number, VerificationWaypoint, VerificationPath.Num(), *Here.ToString(), Elapsed);
+        VerificationPath.Reset();
+        FPlatformMisc::RequestExitWithStatus(false, 1);
+        return false;
+    }
+
+    if (VerificationWaypoint < VerificationPath.Num()
+        && FVector::DistSquared2D(Here, VerificationPath[VerificationWaypoint]) < FMath::Square(14.f))
+    {
+        ++VerificationWaypoint;
+    }
+    if (VerificationWaypoint < VerificationPath.Num())
+    {
+        const FVector Direction = (VerificationPath[VerificationWaypoint] - Here).GetSafeNormal2D();
+        Walker.GetController()->SetControlRotation(Direction.Rotation());
+        Walker.AddMovementInput(Direction, 1.f);
+    }
+    else
+    {
+        Walker.GetController()->SetControlRotation((Room.Door - Walker.GetPawnViewLocation()).Rotation());
+        CheckDoor();
+    }
+    return true;
 }
