@@ -17,7 +17,6 @@ The hall is an existing Unreal project, not a model we need to rebuild. Our work
 - **Authoritative gameplay design:** Intended gameplay rules, phased timing, and loop architecture are documented in **[docs/gameplay-design.md](docs/gameplay-design.md)** (tracked under [Issue #18](https://github.com/Sweet-Rice/shepfinalproj/issues/18)). Refer to that document for design specifications.
 - **Repository contents:** The [Unreal game project and test runner](unreal/README.md), design and playtest documentation, and a [standalone browser room wheel](prototypes/room-wheel/README.md). The Unreal project uses the team's separately shared walkthrough assets.
 - **Build and implementation status:** See the [build handoff](docs/implementation-status.md) for what works in Unreal, test evidence, and remaining playtest work.
-- **Unverified architecture and Blueprint names:** All component and class names mentioned in this README (such as `BP_SunEscapeGameMode`, `BP_IndoorSun`, `BP_ClassroomGoal`, `WBP_SunEscapeHUD`) are proposed conceptual abstractions, not confirmed assets in the digital twin project.
 - **Verified digital twin baseline:** Archive metadata and configuration verified from `PFTDigitalTwin.zip` are preserved below in [Existing digital twin](#existing-digital-twin).
 
 ## Core gameplay rules and invariants
@@ -93,22 +92,18 @@ Playtesters using a shared package can follow the [player quickstart](docs/playe
 
 ## Architecture and integration guidance
 
-The [Commons route worksheet](docs/commons-route.md) identifies a door to inspect and nearby classrooms to check. The [candidate roster](data/classroom-candidates.csv) keeps those rooms out of the wheel until their routes are verified.
+The prototype is implemented in the `PFTFloor1Viewer` Unreal C++ module. The [Commons route worksheet](docs/commons-route.md) and [candidate roster](data/classroom-candidates.csv) track the classroom field audit.
 
-Implementation should follow Blueprint-first gameplay built on top of the existing C++ project. The names below are **unverified conceptual proposals** to establish clear separation of responsibilities, not existing assets:
-
-| Proposed component | Proposed responsibility |
+| Component | Responsibility |
 | --- | --- |
-| `BP_SunEscapeGameMode` *(proposed)* | Own round state (`Inactive`, `Active`, `Won`, `Lost`), assigned room, countdown timer, hazard expansion trigger, health, and terminal transitions. |
-| Existing player pawn or `BP_SunEscapeCharacter` *(proposed)* | Player locomotion, collision, camera, and exposure sample point. No independent damage timer. |
-| `BP_IndoorSun` *(proposed)* | Visual hazard front in Commons and corridors; exposure/hazard origin. |
-| `BP_ClassroomGoal` / Door Actor *(proposed)* | Room identification, eligibility, wrong-door feedback trigger, and target arrival detection. |
-| `WBP_SunEscapeHUD` *(proposed)* | Persistent target room number, countdown timer, health display, wrong-room notifications, and win/loss presentation. Reads state; does not resolve outcomes. |
+| `APFTSunRunMode` | Own the wheel, target room, round timing, sun damage, shade, door checks, and round outcomes. |
+| `APFTSunRunWalker` | Reuse the walkthrough's first-person movement and bind the round actions. |
+| `APFTSunRunHUD` | Draw the wheel, objective, timer, health, door and shade cues, and results. |
 
 ### Architectural invariants
 
 - **One active update source, one damage owner, one terminal transition:** The game mode alone manages round transitions and applies damage. Do not create competing damage loops in pawns, hazard volumes, or UI widgets.
-- **Terminal outcomes within a run:** The proposed states are `Inactive`, `Active`, `Won`, and `Lost`; late overlap or trace callbacks cannot reverse a result. Only an explicit retry or spin-again action starts a fresh lifecycle.
+- **Terminal outcomes within a run:** The prototype phases are `Wheel`, `Running`, `Won`, and `Lost`; late overlap or trace callbacks cannot reverse a result. Only an explicit retry or spin-again action starts a fresh lifecycle.
 - **Decoupled presentation:** The HUD reflects game state; it never adjudicates win/loss conditions or timers.
 
 ### Phased integration sequence
@@ -121,32 +116,13 @@ To manage scope and allow incremental verification, integration proceeds in thre
 
 ## Verification checklist
 
-Verification requires evidence from in-editor or packaged gameplay tests (tracked under [#17](https://github.com/Sweet-Rice/shepfinalproj/issues/17) and [#25](https://github.com/Sweet-Rice/shepfinalproj/issues/25)). Do not mark items complete without recorded test results.
-
-Use the [round lifecycle cases](docs/qa/round-cases.md) for reproducible steps and a results log.
-
-Use the [cover and exposure matrix](docs/qa/cover-cases.md) to check sun arrival, shade, and damage against the visual boundary. Its diagrams are test fixtures, and execution results are pending.
-
-| Scenario | Expected result | Status |
-| --- | --- | --- |
-| Wheel handoff | At the Commons spawn, the wheel settles on one eligible room; the objective, movement, and configured countdown start together exactly once. | Unverified |
-| Head start navigation | Player navigates during initial countdown; **zero hazard damage** occurs while countdown > 0. | Unverified |
-| Hazard expansion at zero | At countdown 0, sun expands from Commons through corridors; unshaded player caught by front takes damage over time. | Unverified |
-| Corridor reach pacing | Expanding hazard reaches most exposed corridors at ~60 s total from wheel handoff. | Unverified |
-| Shade protection | Stepping into covered/shaded area stops damage accumulation while hazard continues spreading. | Unverified |
-| Inspect wrong door | Interacting with or checking a non-target door displays its actual room number on HUD without failing or ending the round. | Unverified |
-| Inspect target door (late win) | Checking the correct classroom door while alive transitions to `Won` immediately, even after countdown zero. | Unverified |
-| Same-update target check & damage | A living player's valid target-door check wins before potentially lethal damage in that update. Mere room entry is not an agreed replacement for checking the door. | Unverified |
-| Deplete health to zero | Health clamped to 0; transition to `Lost`; encounter updates and damage stop. | Unverified |
-| Same-room retry | Defeat menu "Retry" cleanly resets player to Commons spawn, restores full health, resets timer and hazard, and keeps the same target classroom. | Unverified |
-| Spin again | Defeat menu "Spin Again" starts a fresh round, resetting state and spinning the wheel for a room assignment. | Unverified |
-| Packaged build validation | Packaged Windows executable loads map, plugins, assets, UI, and executes the lifecycle identically to PIE. | Unverified |
+Run the [Unreal test runner](unreal/README.md) to verify the round logic and route collision. The [build handoff](docs/implementation-status.md) lists current results and remaining checks. Use the [round lifecycle cases](docs/qa/round-cases.md) and [cover and exposure matrix](docs/qa/cover-cases.md) for a rendered playthrough.
 
 Use the [freshman playtest kit](docs/playtesting/facilitator-script.md) and [results sheet](data/playtest-results.csv) once a teammate can host a verified build. The starter rows are planning slots.
 
 ## Handoff rules for group members and their agents
 
-1. **Inspect before editing.** This repository currently documents an external project archive. Verify files and check out actual assets before assuming source paths or assets exist.
+1. **Inspect before editing.** Start with the Unreal project in this repository and attach the curated walkthrough assets when working on map integration.
 2. **Preserve the twin.** Do not delete original missions, alter the global game instance, strip plugin dependencies, or resave the hall as incidental cleanup.
 3. **Agree on contracts before splitting work.** Maintain the lifecycle, state ownership, and interface contracts documented in [docs/gameplay-design.md](docs/gameplay-design.md).
 4. **Keep one owner per binary asset.** Coordinate changes to maps, Blueprints, widgets, and other `.uasset` files; Git cannot merge simultaneous binary edits.
