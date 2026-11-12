@@ -1,9 +1,10 @@
 [CmdletBinding()]
 param(
-    [ValidateSet('Build', 'Test', 'Play')]
+    [ValidateSet('Build', 'Test', 'Play', 'Package')]
     [string]$Mode = 'Test',
     [string]$EngineRoot = (Join-Path $env:ProgramFiles 'Epic Games\UE_5.8'),
-    [string]$AssetsFrom
+    [string]$AssetsFrom,
+    [string]$PackageDirectory
 )
 
 $ErrorActionPreference = 'Stop'
@@ -35,6 +36,18 @@ if ($Mode -ne 'Build') {
             throw "Missing $relative. Pass -AssetsFrom with the curated walkthrough project directory."
         }
     }
+}
+
+if ($Mode -eq 'Package') {
+    if (-not $PackageDirectory) {
+        $PackageDirectory = Join-Path $projectRoot 'Saved\Standalone'
+    }
+    $PackageDirectory = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($PackageDirectory)
+    $uat = Join-Path $EngineRoot 'Engine\Build\BatchFiles\RunUAT.bat'
+    & $uat BuildCookRun "-project=$project" -noP4 -platform=Win64 -clientconfig=Development `
+        -build -cook -stage -package -pak -iostore -compressed -prereqs -nodebuginfo -unattended -utf8output `
+        '-map=/Game/Maps/PFTWalkthrough' "-stagingdirectory=$PackageDirectory" '-ubtargs=-MaxParallelActions=1 -NoUBA'
+    exit $LASTEXITCODE
 }
 
 & $build PFTFloor1ViewerEditor Win64 Development "-Project=$project" -WaitMutex -MaxParallelActions=1 -NoUBA
