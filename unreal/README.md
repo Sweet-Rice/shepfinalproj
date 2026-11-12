@@ -20,6 +20,8 @@ From the repository root in PowerShell:
 
 `-AssetsFrom` takes the directory of the team's curated walkthrough project. It creates local directory junctions to the walkthrough's `Content` and `Plugins` folders if those directories are absent. Supply the path once per checkout, or place your own copies of those folders under `unreal/PFTFloor1Viewer`. Get the assets through the team's sharing channel. The asset directories and generated files are ignored by Git.
 
+The hanging signs and door plaques restore lettering and directions from the original first-floor sign actors. For an older walkthrough asset folder, copy `FFMetaGeorgian.uasset`, `Wingdings.uasset`, and `AcuminProExtraCondensedBold.uasset` from the original twin's `Content/Fonts` into the curated walkthrough's `Content/Fonts` before packaging. The cooked game includes these fonts.
+
 The standalone launcher selects `PFTSunRunMode` explicitly because the shared map's World Settings select the original walkthrough mode. To use Play In Editor for level edits, use a local copy of the map and select `PFTSunRunMode` under **World Settings → GameMode Override**.
 
 ## Gameplay and verification

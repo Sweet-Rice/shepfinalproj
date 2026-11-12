@@ -12,6 +12,7 @@ class APFTSunRunMode : public AGameModeBase
 
 public:
     APFTSunRunMode();
+    void BeginPlay() override;
     void RestartPlayer(AController* Player) override;
     void Tick(float DeltaSeconds) override;
     void Spin();
@@ -37,6 +38,7 @@ private:
     FString DoorFeedback;
     bool bDoorCheckQueued = false;
     bool bVerified = false;
+    int32 RegisteredSignText = 0;
     TArray<FVector> VerificationPath;
     int32 VerificationWaypoint = 0;
 };

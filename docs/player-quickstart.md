@@ -25,7 +25,7 @@ The standalone build runs on 64-bit Windows. Building a new package requires Unr
 *What If the Sun Was Inside PFT?* is a first-person wayfinding game set in the digital twin of Patrick F. Taylor Hall (PFT), designed for LSU freshmen learning the building layout.
 
 - **Spawn & Objective:** You start just inside the designated Commons exterior door. A wheel assigns a first-floor classroom. Once it settles, the target room number stays visible, movement unlocks, and the head-start countdown begins.
-- **Wayfinding:** Walk toward your assigned classroom using room signs and landmarks.
+- **Wayfinding:** Follow the room ranges and arrows on the overhead signs, then check the numbered classroom door.
 - **Checking Rooms:** Approach a classroom door and use the build's confirmed door-check input.
   - If it is the **wrong door**, its room number is shown. Your objective does not change, and the timer and hazard continue without pause.
   - If it is the **correct target door** and you are still alive when checking it, you win. Simply entering a room is not a confirmed substitute for checking its door.
