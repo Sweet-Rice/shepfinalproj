@@ -23,6 +23,8 @@ namespace
     constexpr float DamagePerSecond = 20;
     constexpr float DoorRange = 200;
     constexpr float RadiusAtFullSpread = 3200;
+    constexpr float SunSpeed = RadiusAtFullSpread / (FullSpreadTime - HeadStart);
+    constexpr double GroundCueRange = 1000;
 
     struct FClassroom
     {
@@ -46,8 +48,7 @@ namespace
 
     float SunArrivalTime(const FVector& Position)
     {
-        return HeadStart + (FullSpreadTime - HeadStart)
-            * static_cast<float>(FVector::Dist2D(CommonsStart, Position) / RadiusAtFullSpread);
+        return HeadStart + static_cast<float>(FVector::Dist2D(CommonsStart, Position) / SunSpeed);
     }
 
     bool IsInShade(const FVector& Position)
@@ -58,6 +59,99 @@ namespace
     bool SunReached(const FVector& Position, float Elapsed)
     {
         return Elapsed >= SunArrivalTime(Position);
+    }
+
+    void DrawGroundCues(AHUD& HUD, const APlayerController& Player, const APawn& Pawn,
+        float Elapsed, float Width, float Height)
+    {
+        const FVector2D Position(Pawn.GetActorLocation());
+        const FVector2D Origin(CommonsStart);
+        const double Radius = FMath::Max(0.f, Elapsed - HeadStart) * SunSpeed;
+        const double DistanceFromOrigin = FVector2D::Distance(Position, Origin);
+        const bool bNearFront = Radius > 10 && FMath::Abs(DistanceFromOrigin - Radius) <= GroundCueRange;
+        const bool bNearShade = FVector2D::DistSquared(Position, Shade.GetCenter()) <= FMath::Square(GroundCueRange);
+        if (!bNearFront && !bNearShade)
+        {
+            return;
+        }
+
+        FVector Eyes;
+        FRotator Look;
+        Pawn.GetActorEyesViewPoint(Eyes, Look);
+        const FVector ViewForward = Look.Vector();
+        const FCollisionQueryParams Query(SCENE_QUERY_STAT(PFTGroundCue), true, &Pawn);
+        const UWorld& World = *Pawn.GetWorld();
+        const auto ProjectFloor = [&](const FVector2D& Point, FVector2D& Screen, FVector& Floor)
+        {
+            if (FVector::DotProduct(FVector(Point, 15) - Eyes, ViewForward) <= 0)
+            {
+                return false;
+            }
+            FHitResult Hit;
+            if (!World.LineTraceSingleByChannel(Hit, FVector(Point, 140), FVector(Point, -140), ECC_Visibility, Query)
+                || Hit.ImpactNormal.Z < .85 || Hit.ImpactPoint.Z > 50)
+            {
+                return false;
+            }
+            Floor = Hit.ImpactPoint + FVector(0, 0, 3);
+            return Player.ProjectWorldLocationToScreen(Floor, Screen)
+                && Screen.X >= 0 && Screen.X < Width && Screen.Y >= 0 && Screen.Y < Height
+                && !World.LineTraceTestByChannel(Eyes, Floor, ECC_Visibility, Query);
+        };
+        const auto DrawSegment = [&](const FVector2D& A, const FVector2D& B, const FLinearColor& Color)
+        {
+            const FVector2D Middle = (A + B) * .5;
+            if (FVector2D::DistSquared(Position, Middle) > FMath::Square(GroundCueRange))
+            {
+                return;
+            }
+            FVector2D Start, End, Center;
+            FVector FloorA, FloorB, FloorCenter;
+            if (ProjectFloor(A, Start, FloorA) && ProjectFloor(B, End, FloorB)
+                && ProjectFloor(Middle, Center, FloorCenter)
+                && FMath::Abs(FloorA.Z - FloorB.Z) < 12
+                && FMath::Abs(FloorCenter.Z - (FloorA.Z + FloorB.Z) * .5) < 8)
+            {
+                HUD.DrawLine(Start.X, Start.Y, End.X, End.Y, FLinearColor(.02f, .025f, .04f), 5.f);
+                HUD.DrawLine(Start.X, Start.Y, End.X, End.Y, Color, 2.5f);
+            }
+        };
+
+        if (bNearFront)
+        {
+            const double Facing = FMath::Atan2(Position.Y - Origin.Y, Position.X - Origin.X);
+            const double Arc = DistanceFromOrigin <= GroundCueRange ? PI : FMath::Asin(GroundCueRange / DistanceFromOrigin) * 1.25;
+            const int32 Segments = FMath::Clamp(FMath::CeilToInt(2 * Arc * Radius / 55), 12, 72);
+            const auto PointOnFront = [&](int32 Index)
+            {
+                const double Angle = Facing - Arc + 2 * Arc * Index / Segments;
+                return Origin + Radius * FVector2D(FMath::Cos(Angle), FMath::Sin(Angle));
+            };
+            for (int32 Index = 0; Index < Segments; ++Index)
+            {
+                const FVector2D A = PointOnFront(Index);
+                const FVector2D B = PointOnFront(Index + 1);
+                if (!Shade.IsInsideOrOn((A + B) * .5))
+                {
+                    DrawSegment(A, B, FLinearColor(1.f, .61f, .14f));
+                }
+            }
+        }
+
+        if (bNearShade)
+        {
+            const FVector2D Corners[] = {Shade.Min, {Shade.Max.X, Shade.Min.Y}, Shade.Max, {Shade.Min.X, Shade.Max.Y}};
+            for (int32 Side = 0; Side < UE_ARRAY_COUNT(Corners); ++Side)
+            {
+                const FVector2D& A = Corners[Side];
+                const FVector2D& B = Corners[(Side + 1) % UE_ARRAY_COUNT(Corners)];
+                for (int32 Segment = 0; Segment < 5; ++Segment)
+                {
+                    DrawSegment(FMath::Lerp(A, B, Segment / 5.0), FMath::Lerp(A, B, (Segment + 1) / 5.0),
+                        FLinearColor(.26f, .95f, .78f));
+                }
+            }
+        }
     }
 
     const FClassroom* FindCheckedDoor(APawn& Pawn)
@@ -356,15 +450,27 @@ void APFTSunRunHUD::DrawHUD()
     {
         DrawRect(FLinearColor(1.f, .28f, .04f, .17f), 0, 0, Width, Height);
     }
+    if (Mode->Phase == EPFTRoundPhase::Running)
+    {
+        if (const APlayerController* Player = GetOwningPlayerController())
+        {
+            DrawGroundCues(*this, *Player, *Pawn, Mode->Elapsed, Width, Height);
+        }
+    }
     DrawRect(Panel, 22, 22, 284, 110);
     DrawText(FString::Printf(TEXT("Find room %d"), Room), Ink, 36, 32, GEngine->GetLargeFont(), 1.35f);
     FString Status = FString::Printf(TEXT("Sun expands in %ds"), FMath::CeilToInt(HeadStart - Mode->Elapsed));
-    if (bExpanding)
+    if (bShade)
     {
-        Status = bShade ? TEXT("In shade") : (bBurning ? TEXT("In sunlight. Find shade.")
-            : FString::Printf(TEXT("Sun reaches here in %ds"), FMath::CeilToInt(SunArrivalTime(Position) - Mode->Elapsed)));
+        Status = bExpanding ? TEXT("In shade") : FString::Printf(TEXT("In shade. Sun expands in %ds"),
+            FMath::CeilToInt(HeadStart - Mode->Elapsed));
     }
-    DrawText(Status, bShade && bExpanding ? Aqua : (bBurning ? Red : Gold), 36, 67, GEngine->GetMediumFont(), 1.f);
+    else if (bExpanding)
+    {
+        Status = bBurning ? TEXT("In sunlight. Find shade.")
+            : FString::Printf(TEXT("Sun reaches here in %ds"), FMath::CeilToInt(SunArrivalTime(Position) - Mode->Elapsed));
+    }
+    DrawText(Status, bShade ? Aqua : (bBurning ? Red : Gold), 36, 67, GEngine->GetMediumFont(), 1.f);
     DrawRect(FLinearColor(.13f, .17f, .22f), 36, 100, 196, 9);
     DrawRect(bBurning ? Red : Aqua, 36, 100, 196 * Mode->Health / MaxHealth, 9);
     DrawText(FString::Printf(TEXT("%d HP"), FMath::CeilToInt(Mode->Health)), Ink, 241, 95, GEngine->GetSmallFont());
@@ -427,7 +533,7 @@ void APFTSunRunHUD::DrawHUD()
     else if (FVector::DistSquared2D(Position, CommonsStart) < FMath::Square(1000.f))
     {
         DrawRect(Panel, 22, 139, 284, 42);
-        DrawText(TEXT("Follow the Commons hall toward the stairs."), Ink, 36, 146, GEngine->GetSmallFont());
+        DrawText(TEXT("Follow the hall past Panera toward the stairs."), Ink, 36, 146, GEngine->GetSmallFont());
         DrawText(TEXT("Stay on the first floor."), Gold, 36, 163, GEngine->GetSmallFont());
     }
 }

@@ -22,4 +22,4 @@ The standalone launcher selects `PFTSunRunMode` explicitly because the shared ma
 
 ## Gameplay and verification
 
-The wheel selects room 1225 or 1221. The current sun front expands radially from the Commons after 25 seconds and reaches 32 meters at 60 seconds. One marked shade zone stops exposure damage. See the [build handoff](../docs/implementation-status.md) and [manual round cases](../docs/qa/round-cases.md) for current verification.
+The wheel selects room 1225 or 1221. The current sun front expands radially from the Commons after 25 seconds and reaches 32 meters at 60 seconds. The amber floor line marks the nearby sun front. The teal floor outline marks the shade zone, where exposure damage stops. See the [build handoff](../docs/implementation-status.md) and [manual round cases](../docs/qa/round-cases.md) for current verification.
