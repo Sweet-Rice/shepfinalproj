@@ -69,7 +69,7 @@ namespace
             for (const FIntPoint& Offset : Neighbors)
             {
                 const FIntPoint Next = Current.Grid + Offset;
-                if (Next.X < -68 || Next.X > 8 || Next.Y < -19 || Next.Y > 41 || Visited.Contains(Next))
+                if (Next.X < -80 || Next.X > 34 || Next.Y < -19 || Next.Y > 75 || Visited.Contains(Next))
                 {
                     continue;
                 }
