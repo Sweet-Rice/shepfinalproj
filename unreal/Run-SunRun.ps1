@@ -75,6 +75,6 @@ if (Test-Path -LiteralPath $log -PathType Leaf) {
 }
 if ($runExit -ne 0) { exit $runExit }
 if (-not (Test-Path -LiteralPath $log -PathType Leaf) -or
-    -not (Select-String -LiteralPath $log -SimpleMatch 'PFT SUN RUN: PASS both walking routes' -Quiet)) {
+    -not (Select-String -LiteralPath $log -SimpleMatch 'PFT SUN RUN: PASS all walking routes' -Quiet)) {
     throw 'Unreal exited without completing the Sun Run checks.'
 }

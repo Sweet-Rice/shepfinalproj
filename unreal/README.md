@@ -26,6 +26,6 @@ The standalone launcher selects `PFTSunRunMode` explicitly because the shared ma
 
 ## Gameplay and verification
 
-The wheel selects room 1225 or 1221. The current sun front expands radially from the Commons after 25 seconds and reaches 32 meters at 60 seconds. The amber floor line marks the nearby sun front. The teal floor outline marks the shade zone, where exposure damage stops. See the [build handoff](../docs/implementation-status.md) and [manual round cases](../docs/qa/round-cases.md) for current verification.
+The wheel selects one of five first-floor classrooms: 1221, 1225, 1236, 1240, or 1360. Follow the room ranges and arrows on the original overhead signs, then look for the number on the classroom door. The current sun front expands radially from the Commons after 25 seconds and reaches 32 meters at 60 seconds. The amber floor line marks the nearby sun front. The teal floor outline marks the shade zone, where exposure damage stops. See the [build handoff](../docs/implementation-status.md) and [manual round cases](../docs/qa/round-cases.md) for current verification.
 
 For timing playtests, launch the Windows executable with `-PFTHeadStart=20` or `-PFTHeadStart=30`. The override is clamped to 20–30 seconds. The front speed adjusts so it still reaches 32 meters at 60 seconds. Add `-PFTVerifySunRun` to run the lifecycle and walking-route checks at that setting. See the [Unreal playtest results](../docs/qa/unreal-playtest.md).

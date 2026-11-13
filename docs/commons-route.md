@@ -17,7 +17,7 @@ The [candidate roster](../data/classroom-candidates.csv) contains stable room ID
 - `nearest_landmark` is a map-supported candidate reference, not a measured closest feature or a promise of visibility from the player's route.
 - `landmark_clue` is a self-contained landmark association, not turn-by-turn instructions. All three clues still need a route/sign check.
 - All candidates remain `route_status=needs_route_and_sign_check` and `wheel_eligible=false`. Verify each candidate's route and signage before promoting that candidate; one verified destination is enough for the initial roster milestone.
-- This CSV is a **field-audit list, not a runtime importer or enforced selection gate**. The [current Unreal prototype](../unreal/README.md) already selects 1225 or 1221. The flags do not remove those prototype targets; reported automated reachability and field-audit readiness are different checks.
+- This CSV tracks the campus field audit. The [Unreal roster](../unreal/README.md#gameplay-and-verification) lists the classrooms enabled for play in the digital twin.
 
 ## Starting leads in the twin
 

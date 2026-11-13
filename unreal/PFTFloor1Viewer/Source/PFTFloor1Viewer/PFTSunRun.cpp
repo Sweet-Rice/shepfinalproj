@@ -31,13 +31,17 @@ namespace
         int32 Number;
         FVector Door;
         FVector Approach;
+        const TCHAR* CommonsClue;
     };
 
     // Door centers come from the walkthrough mesh bounds. Approach points are on
     // the hallway side so the player can check a closed door.
     const FClassroom Rooms[] = {
-        {1225, FVector(12384, -6887, 145), FVector(12384, -6757, 100)},
-        {1221, FVector(12216, -6933, 145), FVector(12216, -6800, 100)}
+        {1225, FVector(12384, -6887, 145), FVector(12384, -6757, 100), TEXT("Follow the overhead signs for 1221-1225.")},
+        {1221, FVector(12216, -6933, 145), FVector(12216, -6800, 100), TEXT("Follow the overhead signs for 1221-1225.")},
+        {1236, FVector(12303, -5037, 145), FVector(12428, -5002, 100), TEXT("Follow the overhead signs for 1232-1274.")},
+        {1240, FVector(12070, -4195, 145), FVector(12195, -4160, 100), TEXT("Follow the overhead signs for 1232-1274.")},
+        {1360, FVector(16408, -4534, 145), FVector(16533, -4499, 100), TEXT("Follow the overhead signs for 1300-1360.")},
     };
     const FBox2D Shade(FVector2D(13300, -6330), FVector2D(13520, -6120));
 
@@ -211,6 +215,18 @@ void APFTSunRunMode::BeginPlay()
     if (AActor* Signage = GetWorld()->SpawnActor<AActor>(Spawn))
     {
         RegisteredSignText = RestoreFirstFloorSigns(*Signage);
+        for (const FClassroom& Room : Rooms)
+        {
+            const FVector Facing = (Room.Approach - Room.Door).GetSafeNormal2D();
+            UTextRenderComponent* Number = NewObject<UTextRenderComponent>(Signage);
+            Number->SetText(FText::AsNumber(Room.Number, &FNumberFormattingOptions::DefaultNoGrouping()));
+            Number->SetHorizontalAlignment(EHTA_Center);
+            Number->SetWorldSize(14.f);
+            Number->SetCastShadow(false);
+            Number->SetWorldLocationAndRotation(FVector(Room.Door.X, Room.Door.Y, 197) + Facing * 24, Facing.Rotation());
+            Signage->AddInstanceComponent(Number);
+            Number->RegisterComponent();
+        }
     }
     UE_LOG(LogTemp, Display, TEXT("PFT SUN RUN: restored %d first-floor sign text components"), RegisteredSignText);
 }
@@ -447,9 +463,10 @@ void APFTSunRunHUD::DrawHUD()
         DrawRect(Panel, Left, Top, 328, 284);
         DrawText(TEXT("PFT Sun Run"), Ink, Left + 26, Top + 18, GEngine->GetLargeFont(), 1.45f);
         const FVector2D Center(Width / 2, Top + 137);
+        constexpr float WheelStep = 2 * PI / UE_ARRAY_COUNT(Rooms);
         const float Progress = 1 - Mode->SpinRemaining / SpinTime;
         const float Angle = Mode->SpinRemaining > 0
-            ? (8 - Mode->AssignedRoom) * PI * (1 - FMath::Square(1 - Progress)) : 0.f;
+            ? (8 * PI - Mode->AssignedRoom * WheelStep) * (1 - FMath::Square(1 - Progress)) : 0.f;
         for (int32 Step = 0; Step < 48; ++Step)
         {
             const float A = Step * 2 * PI / 48;
@@ -459,8 +476,10 @@ void APFTSunRunHUD::DrawHUD()
         }
         for (int32 Index = 0; Index < UE_ARRAY_COUNT(Rooms); ++Index)
         {
-            const float A = Angle + Index * PI;
-            const FVector2D Label = Center + 34 * FVector2D(FMath::Cos(A), FMath::Sin(A));
+            const float A = Angle + Index * WheelStep;
+            const float Edge = A + WheelStep / 2;
+            DrawLine(Center.X, Center.Y, Center.X + 64 * FMath::Cos(Edge), Center.Y + 64 * FMath::Sin(Edge), Gold, 1);
+            const FVector2D Label = Center + 40 * FVector2D(FMath::Cos(A), FMath::Sin(A));
             DrawText(FString::FromInt(Rooms[Index].Number), Ink, Label.X - 17, Label.Y - 8, GEngine->GetSmallFont(), 1.25f);
         }
         DrawLine(Center.X + 66, Center.Y, Center.X + 78, Center.Y, Gold, 4);
@@ -564,7 +583,7 @@ void APFTSunRunHUD::DrawHUD()
     else if (FVector::DistSquared2D(Position, CommonsStart) < FMath::Square(1000.f))
     {
         DrawRect(Panel, 22, 139, 284, 42);
-        DrawText(TEXT("Follow the hall past Panera toward the stairs."), Ink, 36, 146, GEngine->GetSmallFont());
+        DrawText(Rooms[Mode->AssignedRoom].CommonsClue, Ink, 36, 146, GEngine->GetSmallFont());
         DrawText(TEXT("Stay on the first floor."), Gold, 36, 163, GEngine->GetSmallFont());
     }
 }
@@ -705,14 +724,14 @@ bool APFTSunRunMode::DriveVerificationWalk(APFTWalker& Walker)
         else
         {
             VerificationPath.Reset();
-            UE_LOG(LogTemp, Display, TEXT("PFT SUN RUN: PASS both walking routes"));
+            UE_LOG(LogTemp, Display, TEXT("PFT SUN RUN: PASS all walking routes (%d)"), UE_ARRAY_COUNT(Rooms));
             FPlatformMisc::RequestExitWithStatus(false, 0);
         }
         return false;
     }
 
     const FVector Here = Walker.GetActorLocation();
-    if (Phase != EPFTRoundPhase::Running || Elapsed > FullSpreadTime)
+    if (Phase != EPFTRoundPhase::Running || Elapsed > 90.f)
     {
         UE_LOG(LogTemp, Error, TEXT("PFT SUN RUN: walk to %d stopped at waypoint %d of %d, %s, %.1fs"),
             Room.Number, VerificationWaypoint, VerificationPath.Num(), *Here.ToString(), Elapsed);
