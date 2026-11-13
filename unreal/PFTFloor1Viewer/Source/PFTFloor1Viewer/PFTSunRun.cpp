@@ -18,14 +18,12 @@ namespace
 {
     const FVector CommonsStart(15124, -7300, 105);
     const FRotator CommonsFacing(0, 105, 0);
-    constexpr float HeadStart = 25;
     constexpr float FullSpreadTime = 60;
     constexpr float SpinTime = 1.8f;
     constexpr float MaxHealth = 100;
     constexpr float DamagePerSecond = 20;
     constexpr float DoorRange = 200;
     constexpr float RadiusAtFullSpread = 3200;
-    constexpr float SunSpeed = RadiusAtFullSpread / (FullSpreadTime - HeadStart);
     constexpr double GroundCueRange = 1000;
 
     struct FClassroom
@@ -48,9 +46,14 @@ namespace
         return GShaderCompilingManager && GShaderCompilingManager->IsCompiling();
     }
 
-    float SunArrivalTime(const FVector& Position)
+    float SunSpeed(float HeadStart)
     {
-        return HeadStart + static_cast<float>(FVector::Dist2D(CommonsStart, Position) / SunSpeed);
+        return RadiusAtFullSpread / (FullSpreadTime - HeadStart);
+    }
+
+    float SunArrivalTime(const FVector& Position, float HeadStart)
+    {
+        return HeadStart + static_cast<float>(FVector::Dist2D(CommonsStart, Position) / SunSpeed(HeadStart));
     }
 
     bool IsInShade(const FVector& Position)
@@ -58,17 +61,12 @@ namespace
         return Shade.IsInsideOrOn(FVector2D(Position));
     }
 
-    bool SunReached(const FVector& Position, float Elapsed)
-    {
-        return Elapsed >= SunArrivalTime(Position);
-    }
-
     void DrawGroundCues(AHUD& HUD, const APlayerController& Player, const APawn& Pawn,
-        float Elapsed, float Width, float Height)
+        float Elapsed, float HeadStart, float Width, float Height)
     {
         const FVector2D Position(Pawn.GetActorLocation());
         const FVector2D Origin(CommonsStart);
-        const double Radius = FMath::Max(0.f, Elapsed - HeadStart) * SunSpeed;
+        const double Radius = FMath::Max(0.f, Elapsed - HeadStart) * SunSpeed(HeadStart);
         const double DistanceFromOrigin = FVector2D::Distance(Position, Origin);
         const bool bNearFront = Radius > 10 && FMath::Abs(DistanceFromOrigin - Radius) <= GroundCueRange;
         const bool bNearShade = FVector2D::DistSquared(Position, Shade.GetCenter()) <= FMath::Square(GroundCueRange);
@@ -198,6 +196,12 @@ APFTSunRunMode::APFTSunRunMode()
 void APFTSunRunMode::BeginPlay()
 {
     Super::BeginPlay();
+    float RequestedHeadStart;
+    if (FParse::Value(FCommandLine::Get(), TEXT("PFTHeadStart="), RequestedHeadStart) && FMath::IsFinite(RequestedHeadStart))
+    {
+        HeadStart = FMath::Clamp(RequestedHeadStart, 20.f, 30.f);
+    }
+    UE_LOG(LogTemp, Display, TEXT("PFT SUN RUN: head start %.1fs"), HeadStart);
     if (!GetWorld()->GetMapName().EndsWith(TEXT("PFTWalkthrough")))
     {
         return;
@@ -300,9 +304,10 @@ void APFTSunRunMode::AdvanceRound(APawn& Pawn, float DeltaSeconds)
     const float PreviousElapsed = Elapsed;
     Elapsed += DeltaSeconds;
     const FVector Position = Pawn.GetActorLocation();
-    if (!IsInShade(Position) && SunReached(Position, Elapsed))
+    const float Arrival = SunArrivalTime(Position, HeadStart);
+    if (!IsInShade(Position) && Elapsed >= Arrival)
     {
-        const float ExposedSeconds = Elapsed - FMath::Max(PreviousElapsed, SunArrivalTime(Position));
+        const float ExposedSeconds = Elapsed - FMath::Max(PreviousElapsed, Arrival);
         Health = FMath::Max(0.f, Health - DamagePerSecond * ExposedSeconds);
         if (Health <= 0)
         {
@@ -466,10 +471,12 @@ void APFTSunRunHUD::DrawHUD()
         return;
     }
 
+    const float HeadStart = Mode->HeadStart;
     const FVector Position = Pawn->GetActorLocation();
+    const float Arrival = SunArrivalTime(Position, HeadStart);
     const bool bExpanding = Mode->Elapsed >= HeadStart;
     const bool bShade = IsInShade(Position);
-    const bool bBurning = !bShade && SunReached(Position, Mode->Elapsed);
+    const bool bBurning = !bShade && Mode->Elapsed >= Arrival;
     if (bBurning && Mode->Phase == EPFTRoundPhase::Running)
     {
         DrawRect(FLinearColor(1.f, .28f, .04f, .17f), 0, 0, Width, Height);
@@ -478,7 +485,7 @@ void APFTSunRunHUD::DrawHUD()
     {
         if (const APlayerController* Player = GetOwningPlayerController())
         {
-            DrawGroundCues(*this, *Player, *Pawn, Mode->Elapsed, Width, Height);
+            DrawGroundCues(*this, *Player, *Pawn, Mode->Elapsed, HeadStart, Width, Height);
         }
     }
     DrawRect(Panel, 22, 22, 284, 110);
@@ -492,7 +499,7 @@ void APFTSunRunHUD::DrawHUD()
     else if (bExpanding)
     {
         Status = bBurning ? TEXT("In sunlight. Find shade.")
-            : FString::Printf(TEXT("Sun reaches here in %ds"), FMath::CeilToInt(SunArrivalTime(Position) - Mode->Elapsed));
+            : FString::Printf(TEXT("Sun reaches here in %ds"), FMath::CeilToInt(Arrival - Mode->Elapsed));
     }
     DrawText(Status, bShade ? Aqua : (bBurning ? Red : Gold), 36, 67, GEngine->GetMediumFont(), 1.f);
     DrawRect(FLinearColor(.13f, .17f, .22f), 36, 100, 196, 9);
@@ -574,11 +581,17 @@ bool APFTSunRunMode::VerifyRound(APFTWalker& Walker)
     const bool bWheelLocked = Phase == EPFTRoundPhase::Wheel && Player.IsMoveInputIgnored()
         && !Walker.CanJump() && Elapsed == 0;
     const int32 RolledRoom = AssignedRoom;
+    const float SpinBeforeRepeatedInput = SpinRemaining;
+    Spin();
+    const bool bSingleRoll = AssignedRoom == RolledRoom && SpinRemaining == SpinBeforeRepeatedInput;
     Tick(SpinTime);
-    const bool bHandoff = Phase == EPFTRoundPhase::Running && !Player.IsMoveInputIgnored() && Elapsed == 0;
+    const bool bHandoff = bSingleRoll && AssignedRoom == RolledRoom && Phase == EPFTRoundPhase::Running
+        && !Player.IsMoveInputIgnored() && Elapsed == 0;
     Tick(HeadStart - .1f);
-    const bool bHeadStart = Health == MaxHealth;
-    Tick(1);
+    const bool bHeadStart = Health == MaxHealth && FMath::IsNearlyEqual(
+        SunArrivalTime(CommonsStart + FVector(RadiusAtFullSpread, 0, 0), HeadStart), FullSpreadTime);
+    const float SpawnArrival = SunArrivalTime(Walker.GetActorLocation(), HeadStart);
+    Tick(SpawnArrival - Elapsed + .1f);
     const bool bExposure = Health < MaxHealth;
 
     const auto AimAt = [&](const FClassroom& Room)
