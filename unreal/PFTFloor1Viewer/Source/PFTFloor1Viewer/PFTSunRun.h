@@ -31,6 +31,7 @@ private:
     EPFTRoundPhase Phase = EPFTRoundPhase::Wheel;
     FVector GroundedStart = FVector::ZeroVector;
     int32 AssignedRoom = 0;
+    float HeadStart = 25.f;
     float SpinRemaining = 0;
     float Elapsed = 0;
     float Health = 100;
