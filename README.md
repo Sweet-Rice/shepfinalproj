@@ -2,7 +2,7 @@
 
 Final project for 4330.
 
-But is it TRULY the final project?
+But is it TRULY the final project? Yeah I think it is.
 
 ## What we are making
 
