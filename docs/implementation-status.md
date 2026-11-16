@@ -25,9 +25,11 @@ No Unreal editor or packaged game was run for this documentation update. In part
 | Retry and spin again | Reported | [PR #49](https://github.com/Sweet-Rice/shepfinalproj/pull/49), [#50](https://github.com/Sweet-Rice/shepfinalproj/pull/50): round reset paths exercised by automation. [Quickstart](player-quickstart.md) documents R / Enter. | Human-visible reset of objective, health, timer, hazard, spawn, and prompts. |
 | First-floor signs | Reported | [PR #53](https://github.com/Sweet-Rice/shepfinalproj/pull/53): 30 signs restored, fonts cooked, packaged signs visually checked by the author, and both walks repeated. | Approved sign/door captures showing legibility and useful arrow directions from the actual route. |
 | Win64 package | Reported | [PR #52](https://github.com/Sweet-Rice/shepfinalproj/pull/52), [#53](https://github.com/Sweet-Rice/shepfinalproj/pull/53): Development package launched; #52 reports 1280×720 startup, 15 lifecycle checks, both walking runs, and ZIP integrity. | Confirm package custody and tested revisions; then a teammate-machine launch/performance record under [#32](https://github.com/Sweet-Rice/shepfinalproj/issues/32). |
-| Human wayfinding and readability | Unverified | No approved gameplay recording or annotated screenshot set was found in the checked repository, PR #49–#53 discussions, or scoped local project/package locations. | [#33](https://github.com/Sweet-Rice/shepfinalproj/issues/33): review actual gameplay with timestamp/screenshot references, observations, and top three fixes. |
+| Recorded wayfinding and readability | Demonstrated (recorded presentation only) | [The supplied `mvpdemo.mp4` review](qa/demo-review.md) documents the room-1240 route, visible HUD, result/pause cards, and three prioritized presentation recommendations with timestamps. The recording's exact build revision is not supplied. | Unfamiliar-player comprehension, unshown hazard/shade/loss/reset behavior, and other routes remain unverified. |
 
 The reported **15 lifecycle checks and two walking runs are separate results**. Their aggregate pass report is not a reconstruction of individual test cases, a substitute for the manual matrices, or proof of human playability.
+
+The supplied recording is reviewed separately from the source-reported checks above: its visible presentation is evidence, but an unconfirmed build identity prevents treating it as verification of a particular commit or every listed next check.
 
 ## Current owner and missing handoff
 
@@ -39,15 +41,17 @@ A [handoff request has been posted on #17](https://github.com/Sweet-Rice/shepfin
 2. The tested gameplay source revision and asset/Perforce revision, exact engine version, map, and package identifier if a package is being shared. The source project's UE 5.8 association is not proof of the tested patch version.
 3. An approved short gameplay clip or screenshot set, tied to that revision, plus the working-feature/blocker summary. Cover spawn, wheel/handoff, signs/route, sun/shade, door interaction, and result/retry transitions.
 
+An initial room-1240 recording has now been supplied and [reviewed for #33](qa/demo-review.md). It does not supply a matched build revision or demonstrate all requested hazard, shelter, loss, and reset coverage.
+
 An approved capture can support no-engine review without requiring this machine to download or render the package. If sharing a package, use the team's approved private channel; a checksum is useful for matching files, not an additional acceptance gate. Keep private download links, credentials, asset-server locations, and restricted level assets out of this public repository.
 
 [#32](https://github.com/Sweet-Rice/shepfinalproj/issues/32) also needs the host's hardware/settings and observed startup/performance. A successful launch on the builder's machine does not predict integrated-GPU performance here.
 
 ## Remaining issue boundaries
 
-- [#17](https://github.com/Sweet-Rice/shepfinalproj/issues/17): this ledger and the request are updated; confirmed ownership/revisions and approved capture remain outstanding.
+- [#17](https://github.com/Sweet-Rice/shepfinalproj/issues/17): the initial recording is reviewed below; confirmed ownership/revisions and the remaining capture coverage are still outstanding.
 - [#19](https://github.com/Sweet-Rice/shepfinalproj/issues/19): complete the [route survey](commons-route.md) through a campus walk or annotated approved reference photos/footage.
 - [#20](https://github.com/Sweet-Rice/shepfinalproj/issues/20): candidate landmarks/clues are recorded, but at least one destination still needs route/sign verification. The CSV is not the runtime wheel's selection gate.
-- [#33](https://github.com/Sweet-Rice/shepfinalproj/issues/33): actual media is required before a timestamped review can be written. Browser/HUD mockups are not substitute gameplay evidence.
+- [#33](https://github.com/Sweet-Rice/shepfinalproj/issues/33): the [timestamped visual review](qa/demo-review.md) is complete. Its three recommendations are not implemented fixes, and its limitations are not passed gameplay tests.
 
-These issues remain open; this update does not claim their unmet acceptance criteria are complete.
+Completing the #33 recording review does not claim that #17, #19, #20, or any unobserved gameplay checks are complete.
